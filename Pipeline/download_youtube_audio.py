@@ -1,30 +1,37 @@
-import youtube_dlc
+import yt_dlp as youtube_dlp
 import os
 
 # video_url = "https://www.youtube.com/watch?v=k7wnNt65lcE"
 video_url = "https://www.youtube.com/watch?v=okSidIyw6GM"
 
-SAVE_PATH = "/".join(os.getcwd().split("/")[:3]) + "/Downloads"
+output_folder = "Pipeline/temp/raw"
 
+# Create output folder if it doesn't exist
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
+# Set options for youtube-dl
 ydl_opts = {
-    "format": "bestaudio/best",  # Specify the format of the audio to download, in this case "bestaudio/best" which selects the best audio quality available.
-    "verbose": "True",  # Enable verbose mode to display detailed output during the download process.
-    "postprocessors": [  # A list of post-processors to be applied to the downloaded audio file after it is downloaded.
+    "format": "bestaudio/best",
+    "outtmpl": os.path.join(output_folder, "%(title)s.%(ext)s"),
+    "postprocessors": [
         {
-            "key": "FFmpegExtractAudio",  # Specify the post-processor to be used, in this case "FFmpegExtractAudio" which extracts audio from video files.
-            "preferredcodec": "mp3",  # Specify the preferred audio codec to be used for the extracted audio, in this case "mp3".
-            "preferredquality": "192",  # Specify the preferred audio quality for the extracted audio, in this case "192" kbps.
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192",
         }
     ],
-    "outtmpl':": "./temp/raw",  # Specify the output directory where the downloaded audio file will be saved, in this case "temp\raw".
+    "postprocessor_args": ["-ar", "16000"],
+    "prefer_ffmpeg": True,
+    "keepvideo": False,
 }
 
-with youtube_dlc.YoutubeDL(ydl_opts) as ydl:
+with youtube_dlp.YoutubeDL(ydl_opts) as ydl:
     ydl.download([video_url])
 
 
 def main():
-    with youtube_dlc.YoutubeDL(ydl_opts) as ydl:
+    with youtube_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([video_url])
 
 
