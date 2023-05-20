@@ -1,32 +1,48 @@
-import youtube_dlc
+import yt_dlp as youtube_dlp
 import os
 
 # video_url = "https://www.youtube.com/watch?v=k7wnNt65lcE"
-video_url = "https://www.youtube.com/watch?v=okSidIyw6GM"
+# video_url = "https://www.youtube.com/watch?v=okSidIyw6GM"
 
-SAVE_PATH = "/".join(os.getcwd().split("/")[:3]) + "/Downloads"
+# output_folder = "Pipeline/temp/raw"
 
-ydl_opts = {
-    "format": "bestaudio/best",  # Specify the format of the audio to download, in this case "bestaudio/best" which selects the best audio quality available.
-    "verbose": "True",  # Enable verbose mode to display detailed output during the download process.
-    "postprocessors": [  # A list of post-processors to be applied to the downloaded audio file after it is downloaded.
-        {
-            "key": "FFmpegExtractAudio",  # Specify the post-processor to be used, in this case "FFmpegExtractAudio" which extracts audio from video files.
-            "preferredcodec": "mp3",  # Specify the preferred audio codec to be used for the extracted audio, in this case "mp3".
-            "preferredquality": "192",  # Specify the preferred audio quality for the extracted audio, in this case "192" kbps.
+
+class VideoDownloader:
+    def __init__(self, output_folder) -> None:
+        self.output_folder = output_folder
+
+        if not os.path.exists(self.output_folder):
+            os.makedirs(self.output_folder)
+
+    def _set_ytdl_config(self):
+        # Set options for youtube-dl
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "outtmpl": os.path.join(self.output_folder, "%(title)s.%(ext)s"),
+            "postprocessors": [
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
+                }
+            ],
+            "postprocessor_args": ["-ar", "16000"],
+            "prefer_ffmpeg": True,
+            "keepvideo": False,
         }
-    ],
-    "outtmpl':": "./temp/raw",  # Specify the output directory where the downloaded audio file will be saved, in this case "temp\raw".
-}
+        return ydl_opts
 
-with youtube_dlc.YoutubeDL(ydl_opts) as ydl:
-    ydl.download([video_url])
+    def download_youtube_video(self, video_url):
+        # Create output folder if it doesn't exist
+        try:
+            with youtube_dlp.YoutubeDL(self._set_ytdl_config()) as ydl:
+                info_dict = ydl.extract_info(video_url, download=False)
+                video_title = info_dict.get('title', None)
+                ydl.download([video_url])
+                return video_title
+        except Exception as e:
+            print(e)
 
 
-def main():
-    with youtube_dlc.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([video_url])
-
-
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#    download_youtube_video(video_url)

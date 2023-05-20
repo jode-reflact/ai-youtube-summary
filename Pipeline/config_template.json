@@ -1,0 +1,11 @@
+{
+    "downloader": {
+        "video_output_folder": "<Path>",
+        "transcribtion_output_folder": "<Path>"
+    },
+    "openai": {
+        "organization": "<org>",
+        "api_key": "<api-key>",
+        "model": "<model>"
+    }
+}
