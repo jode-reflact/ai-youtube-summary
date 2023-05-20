@@ -1,0 +1,60 @@
+.v-btn--variant-text {
+  .v-btn__overlay {
+    background: rgb(var(--v-theme-primary));
+  }
+}
+
+.v-btn--active {
+  .v-btn__overlay {
+    opacity: 0;
+  }
+}
+
+.channel-button,
+.search-suggestions {
+  .v-btn__content {
+    min-width: 1px;
+  }
+}
+
+.v-switch .v-label {
+  opacity: var(--v-high-emphasis-opacity);
+}
+
+.v-list-item-subtitle {
+  line-height: normal;
+}
+
+.v-field {
+  border-radius: 1.5rem;
+  &.v-field--variant-solo-filled {
+    &:hover {
+      .v-field__overlay {
+        opacity: 0;
+      }
+    }
+    &.v-field--focused {
+      .v-field__overlay {
+        opacity: 0;
+      }
+    }
+  }
+
+  .v-field__overlay {
+    opacity: 0;
+  }
+  .v-field-label {
+    margin-inline-start: 2rem;
+    top: 20px;
+  }
+  .v-field__input {
+    padding-inline-start: 2rem;
+    padding-inline-end: 2rem;
+  }
+  .v-field__append-inner {
+    padding: 0;
+  }
+  &.v-field--appended {
+    padding-inline-end: 0;
+  }
+}
