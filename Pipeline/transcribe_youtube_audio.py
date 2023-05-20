@@ -1,13 +1,14 @@
-import whisper
-import os
 import json
+import os
+
+import whisper
 
 input_folder = "Pipeline/temp/raw"
 input_audio = "Worst things to accidentally send your therapist.mp3"
 output_folder = "Pipeline/temp/transcribed"
 
 
-def main():
+def transcribe_video():
     model = whisper.load_model("medium")
     result = model.transcribe(os.path.join(input_folder, input_audio))
     r = json.dumps(result)
@@ -19,4 +20,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    transcribe_video()
