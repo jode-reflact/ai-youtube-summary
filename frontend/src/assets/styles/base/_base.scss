@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+
+html {
+  overflow-y: auto;
+}
+
+/* Scroll bar stylings */
+::-webkit-scrollbar {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--v-theme-scroll-bar), 0.08);
+  background-clip: padding-box;
+  border-radius: 5rem;
+  border-color: rgba(0, 0, 0, 0);
+  border-style: solid;
+  border-width: 0.9rem;
+}
+
+/* Handle on parent hover */
+*:hover::-webkit-scrollbar-thumb {
+  border-width: 0.8rem;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  border-width: 0.7rem;
+  background-color: rgba(var(--v-theme-scroll-bar), 0.15);
+  cursor: grab;
+}
+
+/* Handle on clicked */
+::-webkit-scrollbar-thumb:active {
+  background-color: rgba(var(--v-theme-scroll-bar), 0.4);
+  cursor: grabbing;
+}
