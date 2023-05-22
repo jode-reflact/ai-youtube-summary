@@ -1,0 +1,22 @@
+.locale-options {
+  .v-btn__content {
+    .flag {
+      width: 1.5rem;
+    }
+  }
+}
+
+.v-card-text {
+  .flag {
+    width: 100%;
+  }
+}
+
+.v-btn {
+  transition: background-color 0.1s ease-out;
+  &.logout-btn {
+    .v-btn__overlay {
+      opacity: 0;
+    }
+  }
+}

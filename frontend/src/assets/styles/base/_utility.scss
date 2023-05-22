@@ -1,0 +1,43 @@
+.shadow-sm {
+  box-shadow: rgba(var(--v-theme-shadow), 0.2) 0 4px 16px,
+    rgba(var(--v-theme-shadow), 0.1) 0 8px 32px;
+}
+.shadow-md {
+  box-shadow: rgba(var(--v-theme-shadow), 0.15) -5px 10px 30px 5px;
+}
+.shadow-lg {
+  box-shadow: rgba(var(--v-theme-shadow), 0.15) -10px 20px 65px 10px;
+}
+
+.shadow-sm-primary {
+  box-shadow: rgba(var(--v-theme-primary), 0.2) 0 4px 16px,
+    rgba(var(--v-theme-primary), 0.15) 0 8px 32px;
+}
+
+.bg-soft {
+  background: rgba(var(--v-theme-primary), 0.08);
+}
+
+.bg-active {
+  background: rgba(var(--v-theme-primary), 0.4);
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+.opacity-25 {
+  opacity: 25%;
+}
+.opacity-50 {
+  opacity: 50%;
+}
+.opacity-75 {
+  opacity: 75%;
+}
+.opacity-100 {
+  opacity: 100%;
+}
+
+.aspect-ratio-1 {
+  aspect-ratio: 1 / 1;
+}

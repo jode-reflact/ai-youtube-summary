@@ -1,0 +1,15 @@
+@use 'vuetify/settings' with (
+  $utilities: false,
+  $button-text-transform: None,
+  $button-text-letter-spacing: 0.025rem,
+  $button-width-ratio: 1,
+  $button-background: rgb(var(--v-theme-primary)),
+  $button-color: rgba(var(--v-theme-on-primary), var(--v-high-emphasis-opacity)),
+  $body-font-family: (
+    'Poppins',
+    sans-serif,
+  ),
+  $card-transition-duration: 0.2s,
+  $card-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1),
+  $switch-label-margin-inline-start: 15px
+);
