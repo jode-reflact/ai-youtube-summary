@@ -32,6 +32,8 @@ class VideoTranscriber:
     def transcribe_video(self, input_audio):
         model = whisper.load_model("medium")
         path = self._build_file_path(input_audio)
-        result = model.transcribe(path)
-        return result["text"].replace("&", "and")
-
+        try:
+            result = model.transcribe(path)
+            return result["text"].replace("&", "and")
+        except Exception as e:
+            print(e)
