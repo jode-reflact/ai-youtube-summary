@@ -16,7 +16,9 @@ if __name__ == "__main__":
 
         video_transcriber = VideoTranscriber(
             config["downloader"]["video_output_folder"],
-            config["downloader"]["transcribtion_output_folder"])
+            config["downloader"]["transcribtion_output_folder"],
+            config["downloader"]["english_model"],
+            config["downloader"]["alternate_model"])
 
         video_summarizer = videoSummary(
             config["openai"]["organization"],

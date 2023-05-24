@@ -4,10 +4,11 @@ import os
 import whisper
 
 class VideoTranscriber:
-    def __init__(self, input_folder, output_folder) -> None:
+    def __init__(self, input_folder, output_folder, english_model, alternate_model) -> None:
         self.input_folder = input_folder
         self.output_folder = output_folder
-
+        self.english_model = english_model
+        self.alternate_model = alternate_model
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)
 

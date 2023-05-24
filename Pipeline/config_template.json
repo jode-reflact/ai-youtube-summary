@@ -1,7 +1,9 @@
 {
     "downloader": {
         "video_output_folder": "<Path>",
-        "transcribtion_output_folder": "<Path>"
+        "transcribtion_output_folder": "<Path>",
+        "english_model": "<model>",
+        "alternate_model": "<model>"
     },
     "openai": {
         "organization": "<org>",
