@@ -1,12 +1,6 @@
 import yt_dlp as youtube_dlp
 import os
 
-# video_url = "https://www.youtube.com/watch?v=k7wnNt65lcE"
-# video_url = "https://www.youtube.com/watch?v=okSidIyw6GM"
-
-# output_folder = "Pipeline/temp/raw"
-
-
 class VideoDownloader:
     def __init__(self, output_folder) -> None:
         self.output_folder = output_folder
@@ -33,7 +27,6 @@ class VideoDownloader:
         return ydl_opts
 
     def download_youtube_video(self, video_url):
-        # Create output folder if it doesn't exist
         try:
             with youtube_dlp.YoutubeDL(self._set_ytdl_config()) as ydl:
                 info_dict = ydl.extract_info(video_url, download=False)
@@ -44,5 +37,3 @@ class VideoDownloader:
             print(e)
 
 
-# if __name__ == "__main__":
-#    download_youtube_video(video_url)

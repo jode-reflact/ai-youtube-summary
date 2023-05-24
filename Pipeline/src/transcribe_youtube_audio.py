@@ -3,11 +3,6 @@ import os
 
 import whisper
 
-# input_folder = "Pipeline/temp/raw"
-# input_audio = "Worst things to accidentally send your therapist.mp3"
-# output_folder = "Pipeline/temp/transcribed"
-
-
 class VideoTranscriber:
     def __init__(self, input_folder, output_folder) -> None:
         self.input_folder = input_folder
@@ -29,19 +24,14 @@ class VideoTranscriber:
         _, probs = model.detect_language(mel)
         print(f"Detected language: {max(probs, key=probs.get)}")
 
-    def transcribe_video(self, input_audio):
-        model = whisper.load_model("medium")
+    def _build_file_path(self, input_audio):
         path = os.path.join(self.input_folder, input_audio)
         path = path + ".mp3"
         path = path.replace("\\", "/")
+
+    def transcribe_video(self, input_audio):
+        model = whisper.load_model("medium")
+        path = self._build_file_path(input_audio)
         result = model.transcribe(path)
         return result["text"].replace("&", "and")
-        # print(result["text"])
-        # print(self.get_language(path))
-        # r = json.dumps(result)
-        # print(result)
-        # with open(
-        #     os.path.join(self.output_folder, input_audio + ".json"),
-        #     "w",
-        # ) as f:
-        #     json.dump(result, f)
+
