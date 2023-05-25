@@ -1,14 +1,16 @@
 {
     "downloader": {
         "video_output_folder": "<Path>",
-        "transcribtion_output_folder": "<Path>",
-        "english_model": "<model>",
-        "alternate_model": "<model>",
-        "base_model": "<model>"
+        "transcribtion_output_folder": "<Path>"
     },
     "openai": {
         "organization": "<org>",
         "api_key": "<api-key>",
         "model": "<model>"
+    },
+    "whisper": {
+        "english_model": "<model>",
+        "alternate_model": "<model>",
+        "base_model": "<model>"
     }
 }
