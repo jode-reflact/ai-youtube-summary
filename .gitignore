@@ -4,7 +4,7 @@
 
 *.srt
 *.tsv
-*.txt
+Pipeline/temp/*.txt
 *.part
 # Byte-compiled / optimized / DLL files
 __pycache__/
