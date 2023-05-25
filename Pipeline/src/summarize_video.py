@@ -1,5 +1,4 @@
 import openai
-import json
 
 
 class videoSummary:

@@ -1,5 +1,6 @@
-import yt_dlp as youtube_dlp
 import os
+
+import yt_dlp as youtube_dlp
 
 
 class VideoDownloader:
