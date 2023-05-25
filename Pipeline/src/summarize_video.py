@@ -21,7 +21,7 @@ class videoSummary:
     def chat_completion(self, text):
         openai.api_key = self.api_key
         template = self._generate_prompt(text)
-        
+
         completion = openai.ChatCompletion.create(
             model=self.model, messages=[{"role": "user", "content": template}])
         # print(completion.choices[0].message.content)

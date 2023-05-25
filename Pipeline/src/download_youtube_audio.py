@@ -1,6 +1,7 @@
 import yt_dlp as youtube_dlp
 import os
 
+
 class VideoDownloader:
     def __init__(self, output_folder) -> None:
         self.output_folder = output_folder
@@ -35,5 +36,3 @@ class VideoDownloader:
                 return video_title
         except Exception as e:
             print(e)
-
-
