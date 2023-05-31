@@ -61,10 +61,10 @@ class UsersService {
     email: string;
     password: string;
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    await this.validateEmailConfirmation({ email });
+    await this.validateEmailConfirmation(email);
     await this.validateCredentials({ email, password });
 
-    return this.generateLoginTokens({ email });
+    return this.createLoginTokens(email);
   }
 
   async register({
@@ -74,23 +74,17 @@ class UsersService {
     email: string;
     password: string;
   }): Promise<void> {
-    const { userId, confirmationToken } = await this.createUser({
+    const { userId, confirmationToken } = await this.createUser(
       email,
       password,
-    });
+    );
     await this.sendConfirmationMail({ email, userId, confirmationToken });
   }
 
-  async confirmEmail({
-    userId,
-    confirmationToken,
-  }: {
-    userId: string;
-    confirmationToken: string;
-  }) {
+  async confirmEmail(userId: string, confirmationToken: string) {
     const user = await this.findUserById(userId);
 
-    await this.validateConfirmationToken({ user, confirmationToken });
+    await this.validateConfirmationToken(user, confirmationToken);
 
     await this.saveConfirmedUser(user);
   }
@@ -115,13 +109,23 @@ class UsersService {
     });
   }
 
-  private async createUser({
-    email,
-    password,
+  async resetPassword({
+    userId,
+    newPassword,
+    passwordResetToken,
   }: {
-    email: string;
-    password: string;
+    userId: string;
+    newPassword: string;
+    passwordResetToken: string;
   }) {
+    const user = await this.findUserById(userId);
+
+    await this.validatePasswordResetToken(user, passwordResetToken);
+
+    await this.updatePassword(user, newPassword);
+  }
+
+  private async createUser(email: string, password: string) {
     this.validateEmail(email);
     this.validatePassword(password);
 
@@ -203,21 +207,15 @@ class UsersService {
     userId: string;
     confirmationToken: string;
   }) {
-    const confirmationLink = await this.buildConfirmationLink({
-      confirmationToken,
+    const confirmationLink = await this.buildConfirmationLink(
       userId,
-    });
+      confirmationToken,
+    );
 
     await this.mailService.sendRegistrationMail({ email, confirmationLink });
   }
 
-  private buildConfirmationLink({
-    userId,
-    confirmationToken,
-  }: {
-    userId: string;
-    confirmationToken: string;
-  }) {
+  private buildConfirmationLink(userId: string, confirmationToken: string) {
     const confirmationLink = new URL(this.FRONTEND_HOST);
     confirmationLink.pathname = '/confirm-registration';
     confirmationLink.searchParams.append('userId', userId);
@@ -235,10 +233,10 @@ class UsersService {
     userId: string;
     passwordResetToken: string;
   }) {
-    const passwordResetLink = this.buildPasswordResetLink({
+    const passwordResetLink = this.buildPasswordResetLink(
       userId,
       passwordResetToken,
-    });
+    );
 
     await this.mailService.sendRequestPasswordResetMail({
       email,
@@ -246,13 +244,7 @@ class UsersService {
     });
   }
 
-  private buildPasswordResetLink({
-    userId,
-    passwordResetToken,
-  }: {
-    userId: string;
-    passwordResetToken: string;
-  }) {
+  private buildPasswordResetLink(userId: string, passwordResetToken: string) {
     const passwordResetLink = new URL(this.FRONTEND_HOST);
     passwordResetLink.pathname = '/reset-password';
     passwordResetLink.searchParams.append('userId', userId);
@@ -261,7 +253,7 @@ class UsersService {
     return passwordResetLink.toString();
   }
 
-  private async validateEmailConfirmation({ email }: { email: string }) {
+  private async validateEmailConfirmation(email: string) {
     const user = await this.findUserByEmail(email);
 
     if (user.isConfirmed) return;
@@ -286,7 +278,7 @@ class UsersService {
     }
   }
 
-  private async generateLoginTokens({ email }: { email: string }) {
+  private async createLoginTokens(email: string) {
     const user = await this.findUserByEmail(email);
 
     const { accessToken, refreshToken } =
@@ -295,29 +287,23 @@ class UsersService {
         email,
       });
 
-    await this.saveRefreshTokenHashed({ user, refreshToken });
+    await this.saveRefreshTokenHashed(user, refreshToken);
 
     return { accessToken, refreshToken };
   }
 
-  private async saveRefreshTokenHashed({
-    user,
-    refreshToken,
-  }: {
-    user: UserDocument;
-    refreshToken: string;
-  }) {
+  private async saveRefreshTokenHashed(
+    user: UserDocument,
+    refreshToken: string,
+  ) {
     user.refreshTokenHashed = await this.authService.hash(refreshToken);
     await user.save();
   }
 
-  private async validateConfirmationToken({
-    user,
-    confirmationToken,
-  }: {
-    user: User;
-    confirmationToken: string;
-  }) {
+  private async validateConfirmationToken(
+    user: User,
+    confirmationToken: string,
+  ) {
     if (user.isConfirmed) {
       throw new UserAlreadyConfirmedError(user.email);
     }
@@ -390,6 +376,39 @@ class UsersService {
     const passwordResetTokenIssuedAt = new Date();
 
     return { passwordResetToken, passwordResetTokenIssuedAt };
+  }
+
+  private async validatePasswordResetToken(
+    user: User,
+    passwordResetToken: string,
+  ) {
+    const passwordResetTokenMatch = await this.authService.verifyHashes({
+      hash: user.passwordResetTokenHashed,
+      plain: passwordResetToken,
+    });
+    if (!passwordResetTokenMatch) {
+      throw new InvalidTokenError();
+    }
+
+    const TIME_PERIOD_TO_RESET_PASSWORD = this.configService.get(
+      'TIME_PERIOD_TO_RESET_PASSWORD',
+      { infer: true },
+    );
+    if (
+      isExpired(user.passwordResetTokenIssuedAt, TIME_PERIOD_TO_RESET_PASSWORD)
+    ) {
+      throw new TokenExpiredError();
+    }
+  }
+
+  private async updatePassword(user: UserDocument, newPassword: string) {
+    this.validatePassword(newPassword);
+
+    user.passwordHashed = await this.authService.hash(newPassword);
+    user.passwordResetTokenHashed = undefined;
+    user.passwordResetTokenIssuedAt = undefined;
+
+    await user.save();
   }
 }
 

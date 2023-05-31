@@ -27,4 +27,5 @@ export const environmentVariablesValidationSchema = Joi.object({
 
   // Users
   TIME_PERIOD_TO_CONFIRM_EMAIL: Joi.string().required(),
+  TIME_PERIOD_TO_RESET_PASSWORD: Joi.string().required(),
 });

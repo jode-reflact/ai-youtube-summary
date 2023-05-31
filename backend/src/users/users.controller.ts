@@ -5,6 +5,7 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
+import { PasswordResetDto } from './dto/reset-password.dto';
 
 @Controller()
 export class UsersController {
@@ -25,10 +26,10 @@ export class UsersController {
     @Param('id') userId: string,
     @Body() confirmEmailDto: ConfirmEmailDto,
   ) {
-    return this.usersService.confirmEmail({
+    return this.usersService.confirmEmail(
       userId,
-      confirmationToken: confirmEmailDto.confirmationToken,
-    });
+      confirmEmailDto.confirmationToken,
+    );
   }
 
   @Patch('users/:id/resend-confirmation-link')
@@ -43,5 +44,17 @@ export class UsersController {
     return this.usersService.requestPasswordReset(
       requestPasswordResetDto.email,
     );
+  }
+
+  @Post('users/:id/reset-password')
+  resetPassword(
+    @Param('id') userId: string,
+    @Body() passwordResetDto: PasswordResetDto,
+  ) {
+    return this.usersService.resetPassword({
+      userId,
+      passwordResetToken: passwordResetDto.passwordResetToken,
+      newPassword: passwordResetDto.newPassword,
+    });
   }
 }

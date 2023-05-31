@@ -25,4 +25,5 @@ export interface EnvironmentVariables {
 
   // Users
   TIME_PERIOD_TO_CONFIRM_EMAIL: string;
+  TIME_PERIOD_TO_RESET_PASSWORD: string;
 }
