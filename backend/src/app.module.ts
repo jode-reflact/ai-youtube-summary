@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { environmentVariablesValidationSchema } from './config/environment-variables-validation-schema';
 import { EnvironmentVariables } from './config/environment-variables';
 import { UsersModule } from './users/users.module';
@@ -34,9 +32,7 @@ import { TransformInterceptor } from './common/interceptors/transform-intercepto
     AuthModule,
     MailModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_FILTER,
       useClass: BusinessErrorFilter,
