@@ -9,6 +9,8 @@ import { EnvironmentVariables } from './config/environment-variables';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
+import { BusinessErrorFilter } from './common/filters/business-error-filter';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -32,6 +34,12 @@ import { MailModule } from './mail/mail.module';
     MailModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: BusinessErrorFilter,
+    },
+  ],
 })
 export class AppModule {}
