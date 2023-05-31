@@ -104,9 +104,15 @@ class UsersService {
   }
 
   async requestPasswordReset(email: string) {
-    const { passwordResetToken } = await this.savePasswordResetToken(email);
+    const { userId, passwordResetToken } = await this.savePasswordResetToken(
+      email,
+    );
 
-    await this.sendRequestPasswordResetMail({ email, passwordResetToken });
+    await this.sendRequestPasswordResetMail({
+      email,
+      userId,
+      passwordResetToken,
+    });
   }
 
   private async createUser({
@@ -222,12 +228,17 @@ class UsersService {
 
   private async sendRequestPasswordResetMail({
     email,
+    userId,
     passwordResetToken: passwordResetToken,
   }: {
     email: string;
+    userId: string;
     passwordResetToken: string;
   }) {
-    const passwordResetLink = this.buildPasswordResetLink(passwordResetToken);
+    const passwordResetLink = this.buildPasswordResetLink({
+      userId,
+      passwordResetToken,
+    });
 
     await this.mailService.sendRequestPasswordResetMail({
       email,
@@ -235,9 +246,16 @@ class UsersService {
     });
   }
 
-  private buildPasswordResetLink(passwordResetToken: string) {
+  private buildPasswordResetLink({
+    userId,
+    passwordResetToken,
+  }: {
+    userId: string;
+    passwordResetToken: string;
+  }) {
     const passwordResetLink = new URL(this.FRONTEND_HOST);
     passwordResetLink.pathname = '/reset-password';
+    passwordResetLink.searchParams.append('userId', userId);
     passwordResetLink.searchParams.append('token', passwordResetToken);
 
     return passwordResetLink.toString();
@@ -364,7 +382,7 @@ class UsersService {
     user.passwordResetTokenIssuedAt = passwordResetTokenIssuedAt;
     await user.save();
 
-    return { passwordResetToken };
+    return { passwordResetToken, userId: user._id.toString() };
   }
 
   private buildPasswordResetTokenData() {
