@@ -1,7 +1,7 @@
 import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-import { BusinessError } from '../errors/business-error';
+import { BusinessError } from '../errors/business.error';
 
 @Catch(BusinessError)
 class BusinessErrorFilter implements ExceptionFilter {
