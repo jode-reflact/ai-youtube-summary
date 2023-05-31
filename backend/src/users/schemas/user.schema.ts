@@ -29,10 +29,10 @@ class User {
   refreshTokenHashed?: string;
 
   @Prop()
-  changePasswordTokenHashed?: string;
+  passwordResetTokenHashed?: string;
 
   @Prop({ type: Date })
-  changePasswordTokenIssuedAt?: Date;
+  passwordResetTokenIssuedAt?: Date;
 
   @Prop()
   changeEmailTokenHashed?: string;

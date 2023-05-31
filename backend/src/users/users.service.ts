@@ -20,6 +20,10 @@ import { isExpired } from '../common/util/is-expired';
 
 @Injectable()
 class UsersService {
+  private readonly FRONTEND_HOST = this.configService.get('FRONTEND_HOST', {
+    infer: true,
+  });
+
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
@@ -70,11 +74,8 @@ class UsersService {
     email: string;
     password: string;
   }): Promise<void> {
-    const user = await this.createUser({ email, password });
-    await this.sendConfirmationMail({
-      email: user.email,
-      confirmationToken: user.confirmationTokenHashed,
-    });
+    const { confirmationToken } = await this.createUser({ email, password });
+    await this.sendConfirmationMail({ email, confirmationToken });
   }
 
   async confirmEmail({
@@ -100,12 +101,9 @@ class UsersService {
   }
 
   async requestPasswordReset(email: string) {
-    const { changePasswordToken } = await this.savePasswordResetToken(email);
+    const { passwordResetToken } = await this.savePasswordResetToken(email);
 
-    await this.mailService.sendPasswordResetMail({
-      email,
-      changePasswordToken,
-    });
+    await this.sendRequestPasswordResetMail({ email, passwordResetToken });
   }
 
   private async createUser({
@@ -137,7 +135,9 @@ class UsersService {
       throw error;
     }
 
-    return user;
+    return {
+      confirmationToken: confirmationTokenData.confirmationToken,
+    };
   }
 
   validateEmail(email: string) {
@@ -186,17 +186,42 @@ class UsersService {
     email: string;
     confirmationToken: string;
   }) {
-    const FRONTEND_HOST = this.configService.get('FRONTEND_HOST', {
-      infer: true,
-    });
-    const confirmationLink = new URL(FRONTEND_HOST);
+    const confirmationLink = await this.buildConfirmationLink(
+      confirmationToken,
+    );
+
+    await this.mailService.sendRegistrationMail({ email, confirmationLink });
+  }
+
+  private buildConfirmationLink(confirmationToken: string) {
+    const confirmationLink = new URL(this.FRONTEND_HOST);
     confirmationLink.pathname = '/confirm-registration';
     confirmationLink.searchParams.append('token', confirmationToken);
 
-    await this.mailService.sendRegistrationMail({
+    return confirmationLink.toString();
+  }
+
+  private async sendRequestPasswordResetMail({
+    email,
+    passwordResetToken: passwordResetToken,
+  }: {
+    email: string;
+    passwordResetToken: string;
+  }) {
+    const passwordResetLink = this.buildPasswordResetLink(passwordResetToken);
+
+    await this.mailService.sendRequestPasswordResetMail({
       email,
-      confirmationLink: confirmationLink.toString(),
+      passwordResetLink,
     });
+  }
+
+  private buildPasswordResetLink(passwordResetToken: string) {
+    const passwordResetLink = new URL(this.FRONTEND_HOST);
+    passwordResetLink.pathname = '/reset-password';
+    passwordResetLink.searchParams.append('token', passwordResetToken);
+
+    return passwordResetLink.toString();
   }
 
   private async validateEmailConfirmation({ email }: { email: string }) {
@@ -308,23 +333,23 @@ class UsersService {
   private async savePasswordResetToken(email: string) {
     const user = await this.findUserByEmail(email);
 
-    const { changePasswordToken, changePasswordTokenIssuedAt } =
+    const { passwordResetToken, passwordResetTokenIssuedAt } =
       this.buildPasswordResetTokenData();
 
-    user.changePasswordTokenHashed = await this.authService.hash(
-      changePasswordToken,
+    user.passwordResetTokenHashed = await this.authService.hash(
+      passwordResetToken,
     );
-    user.changePasswordTokenIssuedAt = changePasswordTokenIssuedAt;
+    user.passwordResetTokenIssuedAt = passwordResetTokenIssuedAt;
     await user.save();
 
-    return { changePasswordToken };
+    return { passwordResetToken };
   }
 
   private buildPasswordResetTokenData() {
-    const changePasswordToken = this.authService.generateToken();
-    const changePasswordTokenIssuedAt = new Date();
+    const passwordResetToken = this.authService.generateToken();
+    const passwordResetTokenIssuedAt = new Date();
 
-    return { changePasswordToken, changePasswordTokenIssuedAt };
+    return { passwordResetToken, passwordResetTokenIssuedAt };
   }
 }
 

@@ -36,7 +36,7 @@ export class UsersController {
     return this.usersService.resendConfirmationLink(userId);
   }
 
-  @Post('users/password-reset')
+  @Post('users/request-password-reset')
   requestPasswordReset(
     @Body() requestPasswordResetDto: RequestPasswordResetDto,
   ) {

@@ -16,7 +16,7 @@ export interface EnvironmentVariables {
 
   // Mail Subjects
   MAIL_SUBJECT_REGISTRATION: string;
-  MAIL_SUBJECT_PASSWORD_RESET: string;
+  MAIL_SUBJECT_REQUEST_PASSWORD_RESET: string;
 
   // Auth with JWT
   JWT_SECRET: string;

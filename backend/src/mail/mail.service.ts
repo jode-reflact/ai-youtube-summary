@@ -34,21 +34,21 @@ export class MailService {
     });
   }
 
-  async sendPasswordResetMail({
+  async sendRequestPasswordResetMail({
     email,
-    changePasswordToken,
+    passwordResetLink,
   }: {
     email: string;
-    changePasswordToken: string;
+    passwordResetLink: string;
   }) {
     await this.sendMail({
       to: email,
-      subject: this.configService.get('MAIL_SUBJECT_PASSWORD_RESET', {
+      subject: this.configService.get('MAIL_SUBJECT_REQUEST_PASSWORD_RESET', {
         infer: true,
       }),
-      template: 'password-reset.hbs',
+      template: 'request-password-reset.hbs',
       context: {
-        changePasswordToken,
+        passwordResetLink,
       },
     });
   }
