@@ -6,6 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { environmentVariablesValidationSchema } from './config/environment-variables-validation-schema';
 import { EnvironmentVariables } from './config/environment-variables';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { EnvironmentVariables } from './config/environment-variables';
       }),
       inject: [ConfigService],
     }),
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
