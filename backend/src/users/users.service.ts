@@ -74,8 +74,11 @@ class UsersService {
     email: string;
     password: string;
   }): Promise<void> {
-    const { confirmationToken } = await this.createUser({ email, password });
-    await this.sendConfirmationMail({ email, confirmationToken });
+    const { userId, confirmationToken } = await this.createUser({
+      email,
+      password,
+    });
+    await this.sendConfirmationMail({ email, userId, confirmationToken });
   }
 
   async confirmEmail({
@@ -87,7 +90,7 @@ class UsersService {
   }) {
     const user = await this.findUserById(userId);
 
-    this.validateConfirmationToken({ user, confirmationToken });
+    await this.validateConfirmationToken({ user, confirmationToken });
 
     await this.saveConfirmedUser(user);
   }
@@ -97,7 +100,7 @@ class UsersService {
       userId,
     );
 
-    await this.sendConfirmationMail({ email, confirmationToken });
+    await this.sendConfirmationMail({ email, userId, confirmationToken });
   }
 
   async requestPasswordReset(email: string) {
@@ -116,14 +119,19 @@ class UsersService {
     this.validateEmail(email);
     this.validatePassword(password);
 
+    const { confirmationToken, confirmationTokenIssuedAt } =
+      await this.buildConfirmationTokenData();
     const passwordHashed = await this.authService.hash(password);
-    const confirmationTokenData = await this.buildConfirmationTokenData();
+    const confirmationTokenHashed = await this.authService.hash(
+      confirmationToken,
+    );
 
     const user = new this.userModel({
       email,
       passwordHashed,
       registeredAt: new Date(),
-      ...confirmationTokenData,
+      confirmationTokenHashed,
+      confirmationTokenIssuedAt,
     });
 
     try {
@@ -136,7 +144,8 @@ class UsersService {
     }
 
     return {
-      confirmationToken: confirmationTokenData.confirmationToken,
+      userId: user._id.toString(),
+      confirmationToken,
     };
   }
 
@@ -181,21 +190,31 @@ class UsersService {
 
   private async sendConfirmationMail({
     email,
+    userId,
     confirmationToken,
   }: {
     email: string;
+    userId: string;
     confirmationToken: string;
   }) {
-    const confirmationLink = await this.buildConfirmationLink(
+    const confirmationLink = await this.buildConfirmationLink({
       confirmationToken,
-    );
+      userId,
+    });
 
     await this.mailService.sendRegistrationMail({ email, confirmationLink });
   }
 
-  private buildConfirmationLink(confirmationToken: string) {
+  private buildConfirmationLink({
+    userId,
+    confirmationToken,
+  }: {
+    userId: string;
+    confirmationToken: string;
+  }) {
     const confirmationLink = new URL(this.FRONTEND_HOST);
     confirmationLink.pathname = '/confirm-registration';
+    confirmationLink.searchParams.append('userId', userId);
     confirmationLink.searchParams.append('token', confirmationToken);
 
     return confirmationLink.toString();
@@ -240,10 +259,10 @@ class UsersService {
   }) {
     const user = await this.findUserByEmail(email);
 
-    const passwordMatch = await this.authService.verifyHashes(
-      password,
-      user.passwordHashed,
-    );
+    const passwordMatch = await this.authService.verifyHashes({
+      hash: user.passwordHashed,
+      plain: password,
+    });
     if (!passwordMatch) {
       throw new InvalidCredentialsError();
     }
@@ -274,7 +293,7 @@ class UsersService {
     await user.save();
   }
 
-  private validateConfirmationToken({
+  private async validateConfirmationToken({
     user,
     confirmationToken,
   }: {
@@ -285,12 +304,11 @@ class UsersService {
       throw new UserAlreadyConfirmedError(user.email);
     }
 
-    if (
-      !this.authService.verifyHashes(
-        confirmationToken,
-        user.changeEmailTokenHashed,
-      )
-    ) {
+    const confirmationTokenMatch = await this.authService.verifyHashes({
+      hash: user.confirmationTokenHashed,
+      plain: confirmationToken,
+    });
+    if (!confirmationTokenMatch) {
       throw new InvalidTokenError();
     }
 
@@ -315,6 +333,10 @@ class UsersService {
 
   private async renewConfirmationToken(userId: string) {
     const user = await this.findUserById(userId);
+
+    if (user.isConfirmed) {
+      throw new UserAlreadyConfirmedError(user.email);
+    }
 
     const { confirmationToken, confirmationTokenIssuedAt } =
       await this.buildConfirmationTokenData();
