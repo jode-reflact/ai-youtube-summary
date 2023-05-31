@@ -316,17 +316,17 @@ class UsersService {
   private async renewConfirmationToken(userId: string) {
     const user = await this.findUserById(userId);
 
-    const confirmationTokenData = await this.buildConfirmationTokenData();
+    const { confirmationToken, confirmationTokenIssuedAt } =
+      await this.buildConfirmationTokenData();
     user.confirmationTokenHashed = await this.authService.hash(
-      confirmationTokenData.confirmationToken,
+      confirmationToken,
     );
-    user.confirmationTokenIssuedAt =
-      confirmationTokenData.confirmationTokenIssuedAt;
+    user.confirmationTokenIssuedAt = confirmationTokenIssuedAt;
     await user.save();
 
     return {
       email: user.email,
-      confirmationToken: user.confirmationTokenHashed,
+      confirmationToken,
     };
   }
 
