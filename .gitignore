@@ -172,3 +172,7 @@ Pipeline/config.json
 
 # node
 node_modules
+
+# macOS
+
+.DS_Store
