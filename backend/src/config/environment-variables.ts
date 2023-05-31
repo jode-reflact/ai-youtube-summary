@@ -16,4 +16,9 @@ export interface EnvironmentVariables {
 
   // Mail Subjects
   MAIL_REGISTRATION_SUBJECT: string;
+
+  // Auth with JWT
+  JWT_SECRET: string;
+  ACCESS_TOKEN_EXPIRES_IN: string;
+  REFRESH_TOKEN_EXPIRES_IN: string;
 }

@@ -8,6 +8,11 @@ import { AuthService } from '../auth/auth.service';
 import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '../config/environment-variables';
+import { InvalidEmailError } from '../common/errors/invalid-email.error';
+import { InvalidPasswordError } from '../common/errors/invalid-password.error';
+import { InvalidCredentialsError } from '../common/errors/invalid-credentials.error';
+import { UserNotFoundError } from '../common/errors/user-not-found.error';
+import { EmailNotConfirmedError } from '../common/errors/email-not-confirmed.error';
 
 @Injectable()
 class UsersService {
@@ -19,20 +24,40 @@ class UsersService {
     private readonly configService: ConfigService<EnvironmentVariables>,
   ) {}
 
+  async findUserByEmail(email: string) {
+    const user = await this.userModel.findOne({ email }).exec();
+    if (user == null) {
+      throw new UserNotFoundError(email);
+    }
+
+    return user;
+  }
+
+  async login({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<{ accessToken: string; refreshToken: string }> {
+    await this.validateEmailConfirmation({ email });
+    await this.validateCredentials({ email, password });
+
+    return this.generateLoginTokens({ email });
+  }
+
   async register({
     email,
     password,
   }: {
     email: string;
     password: string;
-  }): Promise<User> {
+  }): Promise<void> {
     const user = await this.createUser({ email, password });
     await this.sendConfirmationMail({
       email: user.email,
       confirmationToken: user.confirmationToken,
     });
-
-    return user;
   }
 
   private async createUser({
@@ -42,7 +67,10 @@ class UsersService {
     email: string;
     password: string;
   }) {
-    const passwordHashed = await this.authService.hashPassword(password);
+    this.validateEmail(email);
+    this.validatePassword(password);
+
+    const passwordHashed = await this.authService.hash(password);
     const confirmationTokenData = await this.buildConfirmationTokenData();
 
     const user = new this.userModel({
@@ -62,6 +90,34 @@ class UsersService {
     }
 
     return user;
+  }
+
+  validateEmail(email: string) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (regex.test(email)) return;
+
+    throw new InvalidEmailError(email);
+  }
+
+  validatePassword(password: string) {
+    if (password.length < 8) {
+      throw new InvalidPasswordError('TOO_SHORT');
+    }
+    if (password.length > 50) {
+      throw new InvalidPasswordError('TOO_LONG');
+    }
+    if (!/[A-Z]/.test(password)) {
+      throw new InvalidPasswordError('NO_UPPERCASE_LETTER');
+    }
+    if (!/[a-z]/.test(password)) {
+      throw new InvalidPasswordError('NO_LOWERCASE_LETTER');
+    }
+    if (!/[0-9]/.test(password)) {
+      throw new InvalidPasswordError('NO_DIGIT');
+    }
+    if (!/[\W_]/.test(password)) {
+      throw new InvalidPasswordError('NO_SPECIAL_CHARACTER');
+    }
   }
 
   private async buildConfirmationTokenData() {
@@ -93,6 +149,56 @@ class UsersService {
       email,
       confirmationLink: confirmationLink.toString(),
     });
+  }
+
+  private async validateEmailConfirmation({ email }: { email: string }) {
+    const user = await this.findUserByEmail(email);
+
+    if (user.isConfirmed) return;
+    throw new EmailNotConfirmedError(email);
+  }
+
+  private async validateCredentials({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) {
+    const user = await this.findUserByEmail(email);
+
+    const passwordMatch = await this.authService.comparePasswords(
+      password,
+      user.passwordHashed,
+    );
+    if (!passwordMatch) {
+      throw new InvalidCredentialsError();
+    }
+  }
+
+  private async generateLoginTokens({ email }: { email: string }) {
+    const user = await this.findUserByEmail(email);
+
+    const { accessToken, refreshToken } =
+      await this.authService.generateLoginTokens({
+        userId: user._id.toString(),
+        email,
+      });
+
+    await this.saveRefreshTokenHashed({ user, refreshToken });
+
+    return { accessToken, refreshToken };
+  }
+
+  private async saveRefreshTokenHashed({
+    user,
+    refreshToken,
+  }: {
+    user: UserDocument;
+    refreshToken: string;
+  }) {
+    user.refreshTokenHashed = await this.authService.hash(refreshToken);
+    await user.save();
   }
 }
 
