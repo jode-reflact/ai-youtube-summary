@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { ConfirmEmailDto } from './dto/confirm-email.dto';
 
 @Controller()
 export class UsersController {
@@ -15,5 +16,21 @@ export class UsersController {
   @Post('users')
   register(@Body() registerUserDto: RegisterUserDto) {
     return this.usersService.register(registerUserDto);
+  }
+
+  @Patch('users/:id/confirm')
+  confirmEmail(
+    @Param('id') userId: string,
+    @Body() confirmEmailDto: ConfirmEmailDto,
+  ) {
+    return this.usersService.confirmEmail({
+      userId,
+      confirmationToken: confirmEmailDto.confirmationToken,
+    });
+  }
+
+  @Patch('users/:id/resend-confirmation-link')
+  resendConfirmationLink(@Param('id') userId: string) {
+    return this.usersService.resendConfirmationLink(userId);
   }
 }

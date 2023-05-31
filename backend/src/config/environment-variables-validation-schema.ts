@@ -23,4 +23,7 @@ export const environmentVariablesValidationSchema = Joi.object({
   JWT_SECRET: Joi.string().required(),
   ACCESS_TOKEN_EXPIRES_IN: Joi.string().required(),
   REFRESH_TOKEN_EXPIRES_IN: Joi.string().required(),
+
+  // Users
+  TIME_PERIOD_TO_CONFIRM_EMAIL: Joi.string().required(),
 });

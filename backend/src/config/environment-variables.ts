@@ -21,4 +21,7 @@ export interface EnvironmentVariables {
   JWT_SECRET: string;
   ACCESS_TOKEN_EXPIRES_IN: string;
   REFRESH_TOKEN_EXPIRES_IN: string;
+
+  // Users
+  TIME_PERIOD_TO_CONFIRM_EMAIL: string;
 }

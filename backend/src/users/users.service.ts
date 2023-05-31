@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { User, UserDocument } from './schemas/user.schema';
 import { EmailTakenError } from '../common/errors/email-taken.error';
@@ -13,6 +13,10 @@ import { InvalidPasswordError } from '../common/errors/invalid-password.error';
 import { InvalidCredentialsError } from '../common/errors/invalid-credentials.error';
 import { UserNotFoundError } from '../common/errors/user-not-found.error';
 import { EmailNotConfirmedError } from '../common/errors/email-not-confirmed.error';
+import { UserAlreadyConfirmedError } from '../common/errors/user-already-confirmed.error';
+import { InvalidTokenError } from '../common/errors/invalid-token.error';
+import { TokenExpiredError } from '../common/errors/token-expired.error';
+import { isExpired } from '../common/util/is-expired';
 
 @Injectable()
 class UsersService {
@@ -28,6 +32,19 @@ class UsersService {
     const user = await this.userModel.findOne({ email }).exec();
     if (user == null) {
       throw new UserNotFoundError(email);
+    }
+
+    return user;
+  }
+
+  async findUserById(id: string) {
+    if (!Types.ObjectId.isValid(id)) {
+      throw new UserNotFoundError(id);
+    }
+
+    const user = await this.userModel.findById(id).exec();
+    if (user == null) {
+      throw new UserNotFoundError(id);
     }
 
     return user;
@@ -58,6 +75,28 @@ class UsersService {
       email: user.email,
       confirmationToken: user.confirmationToken,
     });
+  }
+
+  async confirmEmail({
+    userId,
+    confirmationToken,
+  }: {
+    userId: string;
+    confirmationToken: string;
+  }) {
+    const user = await this.findUserById(userId);
+
+    this.validateConfirmationToken({ user, confirmationToken });
+
+    await this.saveConfirmedUser(user);
+  }
+
+  async resendConfirmationLink(userId: string) {
+    const { email, confirmationToken } = await this.renewConfirmationToken(
+      userId,
+    );
+
+    await this.sendConfirmationMail({ email, confirmationToken });
   }
 
   private async createUser({
@@ -199,6 +238,55 @@ class UsersService {
   }) {
     user.refreshTokenHashed = await this.authService.hash(refreshToken);
     await user.save();
+  }
+
+  private validateConfirmationToken({
+    user,
+    confirmationToken,
+  }: {
+    user: User;
+    confirmationToken: string;
+  }) {
+    if (user.isConfirmed) {
+      throw new UserAlreadyConfirmedError(user.email);
+    }
+
+    if (user.confirmationToken !== confirmationToken) {
+      throw new InvalidTokenError();
+    }
+
+    const TIME_PERIOD_TO_CONFIRM_EMAIL = this.configService.get(
+      'TIME_PERIOD_TO_CONFIRM_EMAIL',
+      { infer: true },
+    );
+    if (
+      isExpired(user.confirmationTokenIssuedAt, TIME_PERIOD_TO_CONFIRM_EMAIL)
+    ) {
+      throw new TokenExpiredError();
+    }
+  }
+
+  private async saveConfirmedUser(user: UserDocument) {
+    user.isConfirmed = true;
+    user.confirmationToken = undefined;
+    user.confirmationTokenIssuedAt = undefined;
+
+    await user.save();
+  }
+
+  private async renewConfirmationToken(userId: string) {
+    const user = await this.findUserById(userId);
+
+    const confirmationTokenData = await this.buildConfirmationTokenData();
+    user.confirmationToken = confirmationTokenData.confirmationToken;
+    user.confirmationTokenIssuedAt =
+      confirmationTokenData.confirmationTokenIssuedAt;
+    await user.save();
+
+    return {
+      email: user.email,
+      confirmationToken: user.confirmationToken,
+    };
   }
 }
 

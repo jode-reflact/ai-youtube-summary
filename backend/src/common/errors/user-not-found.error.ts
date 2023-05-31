@@ -1,8 +1,8 @@
 import { BusinessError } from './business.error';
 
 class UserNotFoundError extends BusinessError {
-  constructor(email: string) {
-    super(`User with email ${email} not found`, 'USER_NOT_FOUND');
+  constructor(identifier: string) {
+    super(`User not found with identifier ${identifier}`, 'USER_NOT_FOUND');
   }
 }
 
