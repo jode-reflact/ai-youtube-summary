@@ -1,8 +1,10 @@
 import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+
 import { UsersService } from './users.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ConfirmEmailDto } from './dto/confirm-email.dto';
+import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 
 @Controller()
 export class UsersController {
@@ -32,5 +34,14 @@ export class UsersController {
   @Patch('users/:id/resend-confirmation-link')
   resendConfirmationLink(@Param('id') userId: string) {
     return this.usersService.resendConfirmationLink(userId);
+  }
+
+  @Post('users/password-reset')
+  requestPasswordReset(
+    @Body() requestPasswordResetDto: RequestPasswordResetDto,
+  ) {
+    return this.usersService.requestPasswordReset(
+      requestPasswordResetDto.email,
+    );
   }
 }

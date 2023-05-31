@@ -73,7 +73,7 @@ class UsersService {
     const user = await this.createUser({ email, password });
     await this.sendConfirmationMail({
       email: user.email,
-      confirmationToken: user.confirmationToken,
+      confirmationToken: user.confirmationTokenHashed,
     });
   }
 
@@ -97,6 +97,15 @@ class UsersService {
     );
 
     await this.sendConfirmationMail({ email, confirmationToken });
+  }
+
+  async requestPasswordReset(email: string) {
+    const { changePasswordToken } = await this.savePasswordResetToken(email);
+
+    await this.mailService.sendPasswordResetMail({
+      email,
+      changePasswordToken,
+    });
   }
 
   private async createUser({
@@ -206,7 +215,7 @@ class UsersService {
   }) {
     const user = await this.findUserByEmail(email);
 
-    const passwordMatch = await this.authService.comparePasswords(
+    const passwordMatch = await this.authService.verifyHashes(
       password,
       user.passwordHashed,
     );
@@ -251,7 +260,12 @@ class UsersService {
       throw new UserAlreadyConfirmedError(user.email);
     }
 
-    if (user.confirmationToken !== confirmationToken) {
+    if (
+      !this.authService.verifyHashes(
+        confirmationToken,
+        user.changeEmailTokenHashed,
+      )
+    ) {
       throw new InvalidTokenError();
     }
 
@@ -268,7 +282,7 @@ class UsersService {
 
   private async saveConfirmedUser(user: UserDocument) {
     user.isConfirmed = true;
-    user.confirmationToken = undefined;
+    user.confirmationTokenHashed = undefined;
     user.confirmationTokenIssuedAt = undefined;
 
     await user.save();
@@ -278,15 +292,39 @@ class UsersService {
     const user = await this.findUserById(userId);
 
     const confirmationTokenData = await this.buildConfirmationTokenData();
-    user.confirmationToken = confirmationTokenData.confirmationToken;
+    user.confirmationTokenHashed = await this.authService.hash(
+      confirmationTokenData.confirmationToken,
+    );
     user.confirmationTokenIssuedAt =
       confirmationTokenData.confirmationTokenIssuedAt;
     await user.save();
 
     return {
       email: user.email,
-      confirmationToken: user.confirmationToken,
+      confirmationToken: user.confirmationTokenHashed,
     };
+  }
+
+  private async savePasswordResetToken(email: string) {
+    const user = await this.findUserByEmail(email);
+
+    const { changePasswordToken, changePasswordTokenIssuedAt } =
+      this.buildPasswordResetTokenData();
+
+    user.changePasswordTokenHashed = await this.authService.hash(
+      changePasswordToken,
+    );
+    user.changePasswordTokenIssuedAt = changePasswordTokenIssuedAt;
+    await user.save();
+
+    return { changePasswordToken };
+  }
+
+  private buildPasswordResetTokenData() {
+    const changePasswordToken = this.authService.generateToken();
+    const changePasswordTokenIssuedAt = new Date();
+
+    return { changePasswordToken, changePasswordTokenIssuedAt };
   }
 }
 

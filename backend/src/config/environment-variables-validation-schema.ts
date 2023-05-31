@@ -17,7 +17,8 @@ export const environmentVariablesValidationSchema = Joi.object({
   MAIL_PASSWORD: Joi.string().required(),
 
   // Mail Subjects
-  MAIL_REGISTRATION_SUBJECT: Joi.string().required(),
+  MAIL_SUBJECT_REGISTRATION: Joi.string().required(),
+  MAIL_SUBJECT_PASSWORD_RESET: Joi.string().required(),
 
   // Auth with JWT
   JWT_SECRET: Joi.string().required(),

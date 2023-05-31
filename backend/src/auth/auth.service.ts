@@ -29,8 +29,8 @@ export class AuthService {
     return argon2.hash(password);
   }
 
-  comparePasswords(password: string, hashedPassword: string) {
-    return argon2.verify(hashedPassword, password);
+  verifyHashes(plain: string, hash: string) {
+    return argon2.verify(plain, hash);
   }
 
   generateToken() {

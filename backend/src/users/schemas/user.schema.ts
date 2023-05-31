@@ -17,7 +17,7 @@ class User {
   confirmationTokenIssuedAt?: Date;
 
   @Prop()
-  confirmationToken?: string;
+  confirmationTokenHashed?: string;
 
   @Prop({ required: true, unique: true })
   email: string;

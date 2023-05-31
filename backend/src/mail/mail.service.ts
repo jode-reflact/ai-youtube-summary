@@ -24,12 +24,31 @@ export class MailService {
   }): Promise<void> {
     await this.sendMail({
       to: email,
-      subject: this.configService.get('MAIL_REGISTRATION_SUBJECT', {
+      subject: this.configService.get('MAIL_SUBJECT_REGISTRATION', {
         infer: true,
       }),
       template: 'registration.hbs',
       context: {
         confirmationLink,
+      },
+    });
+  }
+
+  async sendPasswordResetMail({
+    email,
+    changePasswordToken,
+  }: {
+    email: string;
+    changePasswordToken: string;
+  }) {
+    await this.sendMail({
+      to: email,
+      subject: this.configService.get('MAIL_SUBJECT_PASSWORD_RESET', {
+        infer: true,
+      }),
+      template: 'password-reset.hbs',
+      context: {
+        changePasswordToken,
       },
     });
   }
