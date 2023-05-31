@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { User, UserDocument } from './schemas/user.schema';
-import { EmailTakenError } from '../common/errors/email-taken-error';
+import { EmailTakenError } from '../common/errors/email-taken.error';
 import { AuthService } from '../auth/auth.service';
 import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
