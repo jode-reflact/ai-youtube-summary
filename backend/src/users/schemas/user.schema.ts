@@ -19,7 +19,7 @@ class User {
   @Prop()
   confirmationToken?: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })

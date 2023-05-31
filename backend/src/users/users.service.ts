@@ -5,6 +5,9 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { EmailTakenError } from '../common/errors/email-taken-error';
 import { AuthService } from '../auth/auth.service';
+import { MailService } from '../mail/mail.service';
+import { ConfigService } from '@nestjs/config';
+import { EnvironmentVariables } from '../config/environment-variables';
 
 @Injectable()
 class UsersService {
@@ -12,11 +15,22 @@ class UsersService {
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
     private readonly authService: AuthService,
+    private readonly mailService: MailService,
+    private readonly configService: ConfigService<EnvironmentVariables>,
   ) {}
 
-  async register({ email, password }: { email: string; password: string }) {
+  async register({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<User> {
     const user = await this.createUser({ email, password });
-    // TODO: send registration mail to user
+    await this.sendConfirmationMail({
+      email: user.email,
+      confirmationToken: user.confirmationToken,
+    });
 
     return user;
   }
@@ -59,6 +73,26 @@ class UsersService {
 
   private isEmailTakenError(error: any) {
     return error.code === 11000;
+  }
+
+  private async sendConfirmationMail({
+    email,
+    confirmationToken,
+  }: {
+    email: string;
+    confirmationToken: string;
+  }) {
+    const FRONTEND_HOST = this.configService.get('FRONTEND_HOST', {
+      infer: true,
+    });
+    const confirmationLink = new URL(FRONTEND_HOST);
+    confirmationLink.pathname = '/confirm-registration';
+    confirmationLink.searchParams.append('token', confirmationToken);
+
+    await this.mailService.sendRegistrationMail({
+      email,
+      confirmationLink: confirmationLink.toString(),
+    });
   }
 }
 
