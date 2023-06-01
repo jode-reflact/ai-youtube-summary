@@ -39,6 +39,9 @@ class User {
 
   @Prop({ type: Date })
   changeEmailTokenIssuedAt?: Date;
+
+  @Prop({ type: [Types.ObjectId], ref: 'Video', default: [] })
+  videos: Types.ObjectId[];
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

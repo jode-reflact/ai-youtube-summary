@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { BusinessErrorFilter } from './common/filters/business-error-filter';
 import { TransformInterceptor } from './common/interceptors/transform-interceptor';
+import { VideosModule } from './videos/videos.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { TransformInterceptor } from './common/interceptors/transform-intercepto
     UsersModule,
     AuthModule,
     MailModule,
+    VideosModule,
   ],
   providers: [
     {

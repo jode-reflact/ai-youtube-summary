@@ -5,12 +5,15 @@ import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { EmailTakenError } from '../common/errors/email-taken.error';
 import { UserNotFoundError } from '../common/errors/user-not-found.error';
+import { VideoAlreadyAddedError } from '../common/errors/video-already-added.error';
+import { VideosService } from '../videos/videos.service';
 
 @Injectable()
 class UsersService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    private readonly videosService: VideosService,
   ) {}
 
   async findUserByEmail(email: string): Promise<User> {
@@ -138,6 +141,22 @@ class UsersService {
 
     user.refreshTokenHash = undefined;
 
+    await user.save();
+  }
+
+  async addVideo(userId: string, ytVideoUrl: string) {
+    const user = await this.userModel.findById(userId).exec();
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+
+    const videoId = await this.videosService.addVideo(ytVideoUrl);
+
+    if (user.videos.includes(videoId)) {
+      throw new VideoAlreadyAddedError(videoId.toString());
+    }
+
+    user.videos.push(videoId);
     await user.save();
   }
 
