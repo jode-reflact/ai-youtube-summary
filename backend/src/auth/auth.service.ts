@@ -16,6 +16,8 @@ import { UserAlreadyConfirmedError } from '../common/errors/user-already-confirm
 import { InvalidTokenError } from '../common/errors/invalid-token.error';
 import { isExpired } from '../common/util/is-expired';
 import { TokenExpiredError } from '../common/errors/token-expired.error';
+import { AccessTokenPayload } from './types/access-token-payload';
+import { RefreshTokenPayload } from './types/refresh-token-payload';
 
 @Injectable()
 export class AuthService {
@@ -64,6 +66,10 @@ export class AuthService {
     );
 
     return loginTokens;
+  }
+
+  async logout(userId: string) {
+    await this.usersService.deleteRefreshToken(userId);
   }
 
   async register({ email, password }: { email: string; password: string }) {
@@ -181,14 +187,18 @@ export class AuthService {
     userId: string;
     email: string;
   }) {
-    const tokenPayload = {
+    const accessTokenPayload: AccessTokenPayload = {
+      sub: userId,
+      email,
+    };
+    const refreshTokenPayload: RefreshTokenPayload = {
       sub: userId,
       email,
     };
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.generateAccessToken(tokenPayload),
-      this.generateRefreshToken(tokenPayload),
+      this.generateAccessToken(accessTokenPayload),
+      this.generateRefreshToken(refreshTokenPayload),
     ]);
 
     return { accessToken, refreshToken };

@@ -28,7 +28,7 @@ class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-token') {
     if (!refreshToken) throw new BadRequestException('Refresh token not found');
 
     return {
-      userId: payload.userId,
+      userId: payload.sub,
       email: payload.email,
       refreshToken,
     };

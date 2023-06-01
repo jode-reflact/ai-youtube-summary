@@ -19,7 +19,7 @@ class AccessTokenStrategy extends PassportStrategy(Strategy, 'access-token') {
 
   validate(payload: AccessTokenPayload) {
     return {
-      userId: payload.userId,
+      userId: payload.sub,
       email: payload.email,
     };
   }

@@ -1,5 +1,5 @@
 interface AccessTokenPayload {
-  userId: string;
+  sub: string;
   email: string;
 }
 

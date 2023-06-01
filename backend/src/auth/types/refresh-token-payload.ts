@@ -1,5 +1,5 @@
 interface RefreshTokenPayload {
-  userId: string;
+  sub: string;
   email: string;
 }
 

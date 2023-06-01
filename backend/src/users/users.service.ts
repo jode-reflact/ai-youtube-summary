@@ -132,6 +132,15 @@ class UsersService {
     await user.save();
   }
 
+  async deleteRefreshToken(userId: string) {
+    const user = await this.userModel.findById(userId).exec();
+    if (user == undefined) return;
+
+    user.refreshTokenHash = undefined;
+
+    await user.save();
+  }
+
   private isEmailTakenError(error: any) {
     return error.code === 11000;
   }
