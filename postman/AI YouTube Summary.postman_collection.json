@@ -1,0 +1,428 @@
+{
+	"info": {
+		"_postman_id": "afcee1f0-6fbe-4fef-8364-dc266380bdaa",
+		"name": "AI YouTube Summary",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19458867"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"noah@noahjanzen.com\",\n    \"password\": \"P@ssw0rt\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_HOST}}/auth/register",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resend confirmation link",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"noah@noahjanzen.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_HOST}}/auth/resend-confirmation-link",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"auth",
+								"resend-confirmation-link"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirm",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"6478a49d1c65f9c9ee7a55b9\",\n    \"confirmationToken\": \"595dfea3-d411-4bf0-8b5f-f0c7074578b0\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_HOST}}/auth/confirm",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"auth",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response should be 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Store access token in collection variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+									"        pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);",
+									"        console.log(\"Access token stored successfully\");",
+									"    } else {",
+									"        console.log(\"Failed to store access token\");",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Store refresh token in collection variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    if (jsonData && jsonData.data && jsonData.data.refreshToken) {",
+									"        pm.collectionVariables.set(\"refreshToken\", jsonData.data.refreshToken);",
+									"        console.log(\"Refresh token stored successfully\");",
+									"    } else {",
+									"        console.log(\"Failed to store refresh token\");",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Extract userId from JWT and store in Postman variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+									"        var base64Url = jsonData.data.accessToken.split('.')[1];",
+									"        var base64 = base64Url.replace('-', '+').replace('_', '/');",
+									"        var tokenPayload = JSON.parse(atob(base64));",
+									"        pm.collectionVariables.set(\"userId\", tokenPayload.sub); ",
+									"    } else {",
+									"        console.log(\"Failed to extract userId\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"noah@noahjanzen.com\",\n    \"password\": \"P@ssw0rt\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_HOST}}/auth/login",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "request password reset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"noah@noahjanzen.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_HOST}}/auth/request-password-reset",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"auth",
+								"request-password-reset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"64787c393098487c00943432\",\n    \"passwordResetToken\": \"0adb6236-9669-4e42-bde0-1a1877cd4abc\",\n    \"newPassword\": \"P@ssw0rd\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_HOST}}/auth/reset-password",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_HOST}}/auth/logout",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response should be 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Store access token in collection variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    if (jsonData && jsonData.data && jsonData.data.accessToken) {",
+									"        pm.collectionVariables.set(\"accessToken\", jsonData.data.accessToken);",
+									"        console.log(\"Access token stored successfully\");",
+									"    } else {",
+									"        console.log(\"Failed to store access token\");",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Store refresh token in collection variable\", function() {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    if (jsonData && jsonData.data && jsonData.data.refreshToken) {",
+									"        pm.collectionVariables.set(\"refreshToken\", jsonData.data.refreshToken);",
+									"        console.log(\"Refresh token stored successfully\");",
+									"    } else {",
+									"        console.log(\"Failed to store refresh token\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refreshToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_HOST}}/auth/refresh",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "add video",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ytVideoUrl\": \"https://youtu.be/watch?v=FIFN1zRTebs\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BACKEND_HOST}}/users/:userId/videos",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"videos"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{userId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BACKEND_HOST",
+			"value": "http://localhost:4000",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		}
+	]
+}
