@@ -54,22 +54,19 @@ export class AuthService {
     await this.validateEmailConfirmation(user);
     await this.validateEnteredCredentials(user, enteredCredentials);
 
-    const loginTokens = await this.generateLoginTokens({
-      email: user.email,
-      userId: user.id.toString(),
-    });
-    const refreshTokenHash = await this.hash(loginTokens.refreshToken);
-
-    await this.usersService.saveRefreshToken(
-      user.id.toString(),
-      refreshTokenHash,
-    );
-
-    return loginTokens;
+    return this.createLoginTokens(user);
   }
 
   async logout(userId: string) {
     await this.usersService.deleteRefreshToken(userId);
+  }
+
+  async refreshTokens(userId: string, refreshToken: string) {
+    const user = await this.usersService.findUserById(userId);
+
+    await this.validateRefreshToken(user, refreshToken);
+
+    return this.createLoginTokens(user);
   }
 
   async register({ email, password }: { email: string; password: string }) {
@@ -403,5 +400,35 @@ export class AuthService {
     ) {
       throw new TokenExpiredError();
     }
+  }
+
+  private async validateRefreshToken(user: User, refreshToken: string) {
+    if (!user.refreshTokenHash) {
+      throw new InvalidTokenError();
+    }
+
+    const refreshTokenMatch = await this.verifyHashes(
+      user.refreshTokenHash,
+      refreshToken,
+    );
+    if (!refreshTokenMatch) {
+      await this.usersService.deleteRefreshToken(user.id.toString());
+      throw new InvalidTokenError();
+    }
+  }
+
+  private async createLoginTokens(user: User) {
+    const loginTokens = await this.generateLoginTokens({
+      email: user.email,
+      userId: user.id.toString(),
+    });
+    const refreshTokenHash = await this.hash(loginTokens.refreshToken);
+
+    await this.usersService.saveRefreshToken(
+      user.id.toString(),
+      refreshTokenHash,
+    );
+
+    return loginTokens;
   }
 }

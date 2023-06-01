@@ -9,6 +9,8 @@ import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { PasswordResetDto } from './dto/reset-password.dto';
 import { AccessTokenAuthGuard } from '../common/guards/access-token-auth.guard';
 import { GetCurrentUserId } from '../common/decorators/get-current-user-id.decorator';
+import { RefreshTokenAuthGuard } from '../common/guards/refresh-token-auth.guard';
+import { GetCurrentUser } from '../common/decorators/get-current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +30,15 @@ export class AuthController {
   @UseGuards(AccessTokenAuthGuard)
   logout(@GetCurrentUserId() userId: string) {
     return this.authService.logout(userId);
+  }
+
+  @Post('refresh')
+  @UseGuards(RefreshTokenAuthGuard)
+  refresh(
+    @GetCurrentUserId() userId: string,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    return this.authService.refreshTokens(userId, refreshToken);
   }
 
   @Post('confirm')
