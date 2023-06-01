@@ -24,7 +24,7 @@ export class UsersController {
     @Body() addVideoDto: AddVideoDto,
   ) {
     if (userIdToken !== userIdParam) {
-      throw new UnauthorizedException("You can't add videos to other users");
+      throw new UnauthorizedException("Provided userId doesn't match token");
     }
 
     return this.usersService.addVideo(userIdToken, addVideoDto.ytVideoUrl);
