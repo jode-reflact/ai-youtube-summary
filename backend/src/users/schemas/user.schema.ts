@@ -17,25 +17,25 @@ class User {
   confirmationTokenIssuedAt?: Date;
 
   @Prop()
-  confirmationTokenHashed?: string;
+  confirmationTokenHash?: string;
 
   @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })
-  passwordHashed: string;
+  passwordHash: string;
 
   @Prop()
-  refreshTokenHashed?: string;
+  refreshTokenHash?: string;
 
   @Prop()
-  passwordResetTokenHashed?: string;
+  passwordResetTokenHash?: string;
 
   @Prop({ type: Date })
   passwordResetTokenIssuedAt?: Date;
 
   @Prop()
-  changeEmailTokenHashed?: string;
+  changeEmailTokenHash?: string;
 
   @Prop({ type: Date })
   changeEmailTokenIssuedAt?: Date;
