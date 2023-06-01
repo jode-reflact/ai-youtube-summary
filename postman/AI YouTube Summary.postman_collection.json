@@ -346,7 +346,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"ytVideoUrl\": \"https://youtu.be/watch?v=FIFN1zRTebs\"\n}",
+							"raw": "{\n    \"ytVideoUrl\": \"https://www.youtube.com/watch?v=15bZlN0LrFg\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -370,6 +370,43 @@
 								}
 							]
 						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "videos",
+			"item": [
+				{
+					"name": "get video",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_HOST}}/videos/:ytVideoId",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"videos",
+								":ytVideoId"
+							],
+							"variable": [
+								{
+									"key": "ytVideoId",
+									"value": "FIFN1zRTebs"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "is valid yt video url",
+					"request": {
+						"method": "GET",
+						"header": []
 					},
 					"response": []
 				}
