@@ -3,27 +3,62 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Video, VideoDocument } from './schemas/video.schema';
-import { validateYtVideoUrl } from '../common/validators/yt-video-url.validator';
 import { extractYtVideoId } from '../common/util/extract-yt-video-id';
+import { YoutubeApiConnector } from './youtube-api.connector';
+import { VideoNotFoundError } from '../common/errors/video-not-found.error';
+import { VideoAlreadyExistsError } from '../common/errors/video-already-exists.error';
 
 @Injectable()
 export class VideosService {
   constructor(
     @InjectModel(Video.name)
     private readonly videoModel: Model<VideoDocument>,
+    private readonly youtubeApiConnector: YoutubeApiConnector,
   ) {}
 
-  async addVideo(ytVideoUrl: string): Promise<Types.ObjectId> {
-    validateYtVideoUrl(ytVideoUrl);
-
-    const ytVideoId = extractYtVideoId(ytVideoUrl);
-
-    let video = await this.videoModel.findOne({ ytVideoId }).exec();
+  async getByYtVideoId(ytVideoId: string) {
+    const video = await this.videoModel.findOne({ ytVideoId }).exec();
     if (video == undefined) {
-      video = new this.videoModel({ ytVideoId });
-      await video.save();
+      throw new VideoNotFoundError(ytVideoId);
     }
 
+    return Video.toDTO(video);
+  }
+
+  async addVideo(ytVideoUrl: string): Promise<Types.ObjectId> {
+    const ytVideoId = extractYtVideoId(ytVideoUrl);
+
+    const videoExists = await this.videoModel.exists({ ytVideoId }).exec();
+    if (videoExists) {
+      throw new VideoAlreadyExistsError(ytVideoId);
+    }
+
+    const video = await this.createVideo(ytVideoId);
+
     return video.id;
+  }
+
+  async isValidYtUrl(url: string) {
+    try {
+      extractYtVideoId(url);
+    } catch (error) {
+      return { isValidYtUrl: false };
+    }
+
+    return { isValidYtUrl: true };
+  }
+
+  private async createVideo(ytVideoId: string) {
+    const video = new this.videoModel({ ytVideoId });
+    const metadata = await this.youtubeApiConnector.getYouTubeVideoMetadata(
+      ytVideoId,
+    );
+    video.metadata = {
+      ...metadata,
+      lastUpdated: new Date(),
+    };
+    await video.save();
+
+    return video;
   }
 }
