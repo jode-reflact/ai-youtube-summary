@@ -372,6 +372,14 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get videos",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
 				}
 			]
 		},

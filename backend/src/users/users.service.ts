@@ -7,6 +7,7 @@ import { EmailTakenError } from '../common/errors/email-taken.error';
 import { UserNotFoundError } from '../common/errors/user-not-found.error';
 import { VideoAlreadyAddedError } from '../common/errors/video-already-added.error';
 import { VideosService } from '../videos/videos.service';
+import { Video } from '../videos/schemas/video.schema';
 
 @Injectable()
 class UsersService {
@@ -158,6 +159,14 @@ class UsersService {
 
     user.videos.push(videoId);
     await user.save();
+  }
+
+  async getVideos(userId: string) {
+    const videos = (
+      await this.userModel.findById(userId).populate('videos').exec()
+    ).videos as unknown as Video[];
+
+    return videos.map((video: Video) => Video.toDTO(video));
   }
 
   private isEmailTakenError(error: any) {

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
   UnauthorizedException,
@@ -16,6 +17,18 @@ import { AccessTokenAuthGuard } from '../common/guards/access-token-auth.guard';
 @UseGuards(AccessTokenAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get(':userId/videos')
+  getVideos(
+    @GetCurrentUserId() userIdToken: string,
+    @Param('userId') userIdParam: string,
+  ) {
+    if (userIdToken !== userIdParam) {
+      throw new UnauthorizedException("Provided userId doesn't match token");
+    }
+
+    return this.usersService.getVideos(userIdToken);
+  }
 
   @Post(':userId/videos')
   addVideo(
