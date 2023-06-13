@@ -12,7 +12,7 @@ from src.transcribe_youtube_audio import VideoTranscriber
 
 
 def pipeline(video_url):
-    with open("Pipeline\config.json") as config_file:
+    with open("Pipeline/config.json") as config_file:
         config = json.load(config_file)
 
         video_downloader = VideoDownloader(
