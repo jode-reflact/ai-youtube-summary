@@ -1,6 +1,7 @@
 # ignore temp files
 *.mp3
 *.wav
+*webm
 
 *.srt
 *.tsv
@@ -176,3 +177,5 @@ node_modules
 # macOS
 
 .DS_Store
+.vscode/launch.json
+.vscode/tasks.json
