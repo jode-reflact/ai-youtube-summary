@@ -6,7 +6,8 @@
     "openai": {
         "organization": "<org>",
         "api_key": "<api-key>",
-        "model": "<model>"
+        "model": "<model>",
+        "split_length":"<split_length>"
     },
     "whisper": {
         "english_model": "<model>",
