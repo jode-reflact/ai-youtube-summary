@@ -2,7 +2,7 @@ import json
 import argparse
 
 from src.download_youtube_audio import VideoDownloader
-from src.summarize_video import videoSummary
+from src.summarize_video import VideoSummary
 from src.transcribe_youtube_audio import VideoTranscriber
 
 # video_url = "https://www.youtube.com/watch?v=okSidIyw6GM"  # short en test
@@ -25,7 +25,7 @@ def pipeline(video_url):
             config["whisper"]["alternate_model"],
             config["whisper"]["base_model"])
 
-        video_summarizer = videoSummary(
+        video_summarizer = VideoSummary(
             config["openai"]["organization"],
             config["openai"]["api_key"],
             config["openai"]["model"],
