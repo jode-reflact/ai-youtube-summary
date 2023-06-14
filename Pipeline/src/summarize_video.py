@@ -1,7 +1,7 @@
 import openai
 import time
 
-class videoSummary:
+class VideoSummary:
     def __init__(self,  organization, api_key, model, split_length) -> None:
         self.organization = organization
         self.api_key = api_key
