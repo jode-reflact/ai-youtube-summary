@@ -162,11 +162,8 @@ class UsersService {
   }
 
   async getVideos(userId: string) {
-    const videos = (
-      await this.userModel.findById(userId).populate('videos').exec()
-    ).videos as unknown as Video[];
-
-    return videos.map((video: Video) => Video.toDTO(video));
+    return (await this.userModel.findById(userId).populate('videos').exec())
+      .videos as unknown as Video[];
   }
 
   private isEmailTakenError(error: any) {
