@@ -31,9 +31,9 @@ export class VideosService {
   async addVideo(ytVideoUrl: string): Promise<Types.ObjectId> {
     const ytVideoId = extractYtVideoId(ytVideoUrl);
 
-    const videoExists = await this.videoModel.exists({ ytVideoId }).exec();
+    const videoExists = await this.videoModel.findOne({ ytVideoId }).exec();
     if (videoExists) {
-      throw new VideoAlreadyExistsError(ytVideoId);
+      return videoExists.id;
     }
 
     const video = await this.createVideo(ytVideoId);
