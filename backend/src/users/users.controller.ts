@@ -12,6 +12,7 @@ import { GetCurrentUserId } from '../common/decorators/get-current-user-id.decor
 import { AddVideoDto } from './dto/add-video.dto';
 import { UsersService } from './users.service';
 import { AccessTokenAuthGuard } from '../common/guards/access-token-auth.guard';
+import { Video } from '../videos/schemas/video.schema';
 
 @Controller('users')
 @UseGuards(AccessTokenAuthGuard)
@@ -19,7 +20,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get(':userId/videos')
-  getVideos(
+  async getVideos(
     @GetCurrentUserId() userIdToken: string,
     @Param('userId') userIdParam: string,
   ) {
@@ -27,7 +28,9 @@ export class UsersController {
       throw new UnauthorizedException("Provided userId doesn't match token");
     }
 
-    return this.usersService.getVideos(userIdToken);
+    const videos = await this.usersService.getVideos(userIdToken);
+
+    return videos.map((video) => Video.toDTO(video));
   }
 
   @Post(':userId/videos')

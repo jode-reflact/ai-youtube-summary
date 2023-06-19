@@ -16,13 +16,16 @@ export class VideosService {
     private readonly youtubeApiConnector: YoutubeApiConnector,
   ) {}
 
-  async getByYtVideoId(ytVideoId: string) {
-    const video = await this.videoModel.findOne({ ytVideoId }).exec();
-    if (video == undefined) {
-      throw new VideoNotFoundError(ytVideoId);
-    }
+  async getByYtVideoIdOrCreate(ytVideoId: string) {
+    try {
+      return await this.getByYtVideoId(ytVideoId);
+    } catch (error) {
+      if (error instanceof VideoNotFoundError) {
+        return await this.createVideo(ytVideoId);
+      }
 
-    return Video.toDTO(video);
+      throw error;
+    }
   }
 
   async addVideo(ytVideoUrl: string): Promise<Types.ObjectId> {
@@ -46,6 +49,15 @@ export class VideosService {
     }
 
     return { isValidYtUrl: true };
+  }
+
+  private async getByYtVideoId(ytVideoId: string) {
+    const video = await this.videoModel.findOne({ ytVideoId }).exec();
+    if (video == undefined) {
+      throw new VideoNotFoundError(ytVideoId);
+    }
+
+    return video;
   }
 
   private async createVideo(ytVideoId: string) {
