@@ -5,9 +5,10 @@ import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { EmailTakenError } from '../common/errors/email-taken.error';
 import { UserNotFoundError } from '../common/errors/user-not-found.error';
-import { VideoAlreadyAddedError } from '../common/errors/video-already-added.error';
+import { VideoAlreadyAddedToPersonalPlaylistError } from '../common/errors/video-already-added-to-personal-playlist.error';
 import { VideosService } from '../videos/videos.service';
 import { Video } from '../videos/schemas/video.schema';
+import { VideoAlreadyExistsError } from '../common/errors/video-already-exists.error';
 
 @Injectable()
 class UsersService {
@@ -151,10 +152,17 @@ class UsersService {
       throw new UserNotFoundError(userId);
     }
 
-    const videoId = await this.videosService.addVideo(ytVideoUrl);
+    let videoId: Types.ObjectId;
+    try {
+      videoId = await this.videosService.addVideo(ytVideoUrl);
+    } catch (error) {
+      if (!(error instanceof VideoAlreadyExistsError)) throw error;
+
+      videoId = error.videoId;
+    }
 
     if (user.videos.includes(videoId)) {
-      throw new VideoAlreadyAddedError(videoId.toString());
+      throw new VideoAlreadyAddedToPersonalPlaylistError(videoId.toString());
     }
 
     user.videos.push(videoId);

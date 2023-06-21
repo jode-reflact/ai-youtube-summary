@@ -16,7 +16,7 @@ export class VideosService {
     private readonly youtubeApiConnector: YoutubeApiConnector,
   ) {}
 
-  async getByYtVideoIdOrCreate(ytVideoId: string) {
+  async getByYtVideoIdOrCreateVideo(ytVideoId: string) {
     try {
       return await this.getByYtVideoId(ytVideoId);
     } catch (error) {
@@ -33,7 +33,7 @@ export class VideosService {
 
     const videoExists = await this.videoModel.findOne({ ytVideoId }).exec();
     if (videoExists) {
-      return videoExists.id;
+      throw new VideoAlreadyExistsError(videoExists._id);
     }
 
     const video = await this.createVideo(ytVideoId);

@@ -11,7 +11,9 @@ export class VideosController {
 
   @Get('videos/:ytVideoId')
   async getVideo(@Param('ytVideoId') ytVideoId: string) {
-    const video = await this.videosService.getByYtVideoIdOrCreate(ytVideoId);
+    const video = await this.videosService.getByYtVideoIdOrCreateVideo(
+      ytVideoId,
+    );
     return Video.toDTO(video);
   }
 

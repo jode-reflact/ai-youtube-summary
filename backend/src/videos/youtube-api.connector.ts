@@ -6,7 +6,7 @@ import { EnvironmentVariables } from '../config/environment-variables';
 import { VideoMetadata } from '../common/types/video-metadata';
 import { YoutubeApiNotReachableError } from '../common/errors/youtube-api-not-reachable.error';
 import { YouTubeVideoApiResponse } from './types/youtube-video-api-response';
-import { VideoNotFoundError } from '../common/errors/video-not-found.error';
+import { VideoNotExistsError } from '../common/errors/video-not-exists.error';
 
 @Injectable()
 class YoutubeApiConnector {
@@ -42,7 +42,7 @@ class YoutubeApiConnector {
     }
 
     if (response.data.items.length === 0) {
-      throw new VideoNotFoundError(videoId);
+      throw new VideoNotExistsError(videoId);
     }
 
     const videoMetadata = response.data.items[0];
