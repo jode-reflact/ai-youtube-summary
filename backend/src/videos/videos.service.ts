@@ -43,12 +43,11 @@ export class VideosService {
 
   async isValidYtUrl(url: string) {
     try {
-      extractYtVideoId(url);
+      const ytVideoId = extractYtVideoId(url);
+      return { isValidYtUrl: true, ytVideoId };
     } catch (error) {
       return { isValidYtUrl: false };
     }
-
-    return { isValidYtUrl: true };
   }
 
   private async getByYtVideoId(ytVideoId: string) {
