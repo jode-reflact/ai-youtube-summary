@@ -70,7 +70,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"userId\": \"6478a49d1c65f9c9ee7a55b9\",\n    \"confirmationToken\": \"595dfea3-d411-4bf0-8b5f-f0c7074578b0\"\n}",
+							"raw": "{\n    \"userId\": \"6478ebc9ed240ad5cd345138\",\n    \"confirmationToken\": \"c0323bcb-281b-477b-ad1b-e3c3036bcea8\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -346,7 +346,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"ytVideoUrl\": \"https://www.youtube.com/watch?v=15bZlN0LrFg\"\n}",
+							"raw": "{\n    \"ytVideoUrl\": \"https://www.youtube.com/watch?v=eikeGLYlzls\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -377,7 +377,24 @@
 					"name": "get videos",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_HOST}}/users/:userId/videos",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"videos"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{userId}}"
+								}
+							]
+						}
 					},
 					"response": []
 				}
@@ -403,7 +420,7 @@
 							"variable": [
 								{
 									"key": "ytVideoId",
-									"value": "FIFN1zRTebs"
+									"value": "eikeGLYlzls"
 								}
 							]
 						}
@@ -414,7 +431,27 @@
 					"name": "is valid yt video url",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_HOST}}/youtube/is-video-url?&url=https://www.youtube.com/watch?v=eikeGLYlzls",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"youtube",
+								"is-video-url"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "url",
+									"value": "https://www.youtube.com/watch?v=eikeGLYlzls"
+								}
+							]
+						}
 					},
 					"response": []
 				}
