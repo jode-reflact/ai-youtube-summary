@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -44,5 +45,18 @@ export class UsersController {
     }
 
     return this.usersService.addVideo(userIdToken, addVideoDto.ytVideoUrl);
+  }
+
+  @Delete(':userId/videos/:videoId')
+  async deleteVideo(
+    @GetCurrentUserId() userIdToken: string,
+    @Param('userId') userIdParam: string,
+    @Param('videoId') videoId: string,
+  ) {
+    if (userIdToken !== userIdParam) {
+      throw new UnauthorizedException("Provided userId doesn't match token");
+    }
+
+    await this.usersService.deleteVideo(userIdToken, videoId);
   }
 }

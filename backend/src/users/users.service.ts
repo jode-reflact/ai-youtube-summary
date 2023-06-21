@@ -9,6 +9,7 @@ import { VideoAlreadyAddedToPersonalPlaylistError } from '../common/errors/video
 import { VideosService } from '../videos/videos.service';
 import { Video } from '../videos/schemas/video.schema';
 import { VideoAlreadyExistsError } from '../common/errors/video-already-exists.error';
+import { VideoDeletionError } from '../common/errors/video-deletion.error';
 
 @Injectable()
 class UsersService {
@@ -172,6 +173,24 @@ class UsersService {
   async getVideos(userId: string) {
     return (await this.userModel.findById(userId).populate('videos').exec())
       .videos as unknown as Video[];
+  }
+
+  async deleteVideo(userId: string, videoId: string) {
+    const user = await this.userModel.findById(userId).exec();
+    if (user == null) {
+      throw new UserNotFoundError(userId);
+    }
+
+    const videoIndex = user.videos
+      .map((video) => video.toString())
+      .indexOf(videoId);
+    const isVideoInPersonalPlaylist = videoIndex !== -1;
+    if (!isVideoInPersonalPlaylist) {
+      throw new VideoDeletionError(videoId);
+    }
+
+    user.videos.splice(videoIndex, 1);
+    await user.save();
   }
 
   private isEmailTakenError(error: any) {
