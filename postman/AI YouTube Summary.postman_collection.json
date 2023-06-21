@@ -397,6 +397,36 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "delete video",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BACKEND_HOST}}/users/:userId/videos/:videoId",
+							"host": [
+								"{{BACKEND_HOST}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"videos",
+								":videoId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": null
+								},
+								{
+									"key": "videoId",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
