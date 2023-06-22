@@ -29,6 +29,9 @@ class VideoMetadata {
   channelTitle: string;
 
   @Prop({ required: true })
+  channelAvatarUrl: string;
+
+  @Prop({ required: true })
   title: string;
 
   @Prop({ required: true })

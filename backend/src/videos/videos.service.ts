@@ -64,8 +64,13 @@ export class VideosService {
     const metadata = await this.youtubeApiConnector.getYouTubeVideoMetadata(
       ytVideoId,
     );
+    const channelAvatar =
+      await this.youtubeApiConnector.getYouTubeChannelAvatar(
+        metadata.channelId,
+      );
     video.metadata = {
       ...metadata,
+      channelAvatarUrl: channelAvatar.medium.url,
       lastUpdated: new Date(),
     };
     await video.save();

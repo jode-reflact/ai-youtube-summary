@@ -7,6 +7,9 @@ import { VideoMetadata } from '../common/types/video-metadata';
 import { YoutubeApiNotReachableError } from '../common/errors/youtube-api-not-reachable.error';
 import { YouTubeVideoApiResponse } from './types/youtube-video-api-response';
 import { VideoNotExistsError } from '../common/errors/video-not-exists.error';
+import { YouTubeChannelApiResponse } from './types/youtube-channel-api-response';
+import { ChannelNotExistsError } from '../common/errors/channel-not-exists.error';
+import { ChannelThumbnails } from '../common/types/channel-thumbnails';
 
 @Injectable()
 class YoutubeApiConnector {
@@ -59,6 +62,39 @@ class YoutubeApiConnector {
         favoriteCount: +videoMetadata.statistics.favoriteCount,
         commentCount: +videoMetadata.statistics.commentCount,
       },
+    };
+  }
+
+  async getYouTubeChannelAvatar(channelId: string): Promise<ChannelThumbnails> {
+    const baseURL = 'https://www.googleapis.com/youtube/v3/channels';
+
+    const url = new URL(baseURL);
+    const params = new URLSearchParams({
+      id: channelId,
+      key: this.API_KEY,
+      part: 'snippet',
+    });
+    url.search = params.toString();
+
+    let response: AxiosResponse<YouTubeChannelApiResponse>;
+    try {
+      this.logger.log(
+        `🌍 Requesting metadata for YouTube channel with id: ${channelId}`,
+      );
+      response = await axios.get<YouTubeChannelApiResponse>(url.toString());
+    } catch (error) {
+      throw new YoutubeApiNotReachableError();
+    }
+
+    if (response.data.items.length === 0) {
+      throw new ChannelNotExistsError(channelId);
+    }
+
+    const channelMetadata = response.data.items[0];
+    return {
+      default: channelMetadata.snippet.thumbnails.default,
+      medium: channelMetadata.snippet.thumbnails.medium,
+      high: channelMetadata.snippet.thumbnails.high,
     };
   }
 }
