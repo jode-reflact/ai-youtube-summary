@@ -38,7 +38,7 @@ class VideoMetadata {
   thumbnailUrl: string;
 
   @Prop({ required: true })
-  duration: string;
+  durationInSeconds: number;
 
   @Prop({ required: true, type: VideoStatisticsSchema })
   statistics: VideoStatistics;

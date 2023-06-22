@@ -52,7 +52,9 @@ class YoutubeApiConnector {
     return {
       title: videoMetadata.snippet.title,
       publishedAt: videoMetadata.snippet.publishedAt,
-      duration: videoMetadata.contentDetails.duration,
+      durationInSeconds: this.convertDurationToMilliseconds(
+        videoMetadata.contentDetails.duration,
+      ),
       thumbnailUrl: videoMetadata.snippet.thumbnails.medium.url,
       channelId: videoMetadata.snippet.channelId,
       channelTitle: videoMetadata.snippet.channelTitle,
@@ -96,6 +98,22 @@ class YoutubeApiConnector {
       medium: channelMetadata.snippet.thumbnails.medium,
       high: channelMetadata.snippet.thumbnails.high,
     };
+  }
+
+  private convertDurationToMilliseconds(duration: string): number {
+    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
+
+    // Hours, minutes and seconds are optional
+    const [hours, minutes, seconds] = match.slice(1).map((value) => {
+      if (value != null) {
+        // Remove the letters (H, M, or S) from the string
+        return parseFloat(value.replace(/\D/g, ''));
+      }
+
+      return 0;
+    });
+
+    return hours * 60 * 60 + minutes * 60 + seconds;
   }
 }
 

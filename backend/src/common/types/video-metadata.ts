@@ -9,7 +9,7 @@ interface VideoMetadata {
 
   thumbnailUrl: string;
 
-  duration: string;
+  durationInSeconds: number;
 
   statistics: {
     viewCount: number;
