@@ -1,45 +1,32 @@
 <template>
-  <div
-    class="bg-nav-surface shadow-md tw-absolute tw-top-20 tw-z-10 tw-flex tw-flex-col tw-rounded-3xl tw-p-5 tw-pr-0"
-    :class="mdAndUp ? '-tw-left-20 tw-max-h-[50vh] tw-w-96' : 'tw-max-h-80 tw-w-full'"
-    v-if="suggestions.length"
-  >
-    <div class="search-suggestions tw-w-full tw-overflow-y-auto">
-      <v-btn
-        variant="text"
-        v-for="(suggestion, index) in suggestions"
-        :key="index"
-        class="tw-flex tw-w-full tw-justify-start tw-rounded-2xl tw-p-5"
-        @click="clickHandler(suggestion.id)"
-      >
-        <div class="tw-flex tw-items-center">
-          <v-img
-            :aspect-ratio="1"
-            cover
-            :src="suggestion.thumbnailSrc"
-            class="tw-mr-4 tw-w-10 tw-rounded-xl"
-          />
-          <span class="tw-truncate tw-text-lg">{{ suggestion.title }}</span>
-        </div>
-      </v-btn>
-    </div>
+  <div class="tw-w-full tw-overflow-y-auto">
+    <v-card
+      v-for="(videoSuggestion, index) in videoSuggestions"
+      :key="index"
+      :image="videoSuggestion.metadata.thumbnailUrl"
+      class="tw-mb-5 tw-w-full tw-rounded-2xl last-of-type:tw-mb-0"
+      @click="emit('suggestionClicked', videoSuggestion.ytVideoId)"
+    >
+      <div class="bg-surface tw-absolute tw-h-full tw-w-full tw-opacity-50" />
+      <div class="tw-flex tw-items-center tw-justify-start tw-p-5 tw-backdrop-blur">
+        <v-img
+          :aspect-ratio="1"
+          :src="videoSuggestion.metadata.channelAvatarUrl"
+          class="tw-h-auto tw-w-10 tw-grow-0 tw-rounded-xl"
+        />
+        <span class="tw-ml-4 tw-truncate tw-text-lg">{{ videoSuggestion.metadata.title }}</span>
+      </div>
+    </v-card>
   </div>
 </template>
 <script setup lang="ts">
-import type { SummaryItem } from '../../../dummy/summaries';
-import type { Router } from 'vue-router';
-import { useRouter } from 'vue-router';
-import { useDisplay } from 'vuetify';
+import type { Video } from '@/services/types/common';
 
 defineProps<{
-  suggestions: SummaryItem[];
+  videoSuggestions: Video[];
 }>();
 
-const router: Router = useRouter();
-
-const clickHandler = (summaryId: string) => {
-  router.push(`/summary/${summaryId}`);
-};
-
-const { mdAndUp } = useDisplay();
+const emit: (event: 'suggestionClicked', ytVideoId: string) => void = defineEmits<{
+  (event: 'suggestionClicked', ytVideoId: string): void;
+}>();
 </script>

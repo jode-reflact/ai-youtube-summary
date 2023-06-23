@@ -1,28 +1,28 @@
 import { createVuetify } from 'vuetify';
 import type { ThemeDefinition } from 'vuetify';
 import 'vuetify/styles';
+import { aliases, fa } from 'vuetify/iconsets/fa-svg';
 
 const lightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    background: '#eff8ff',
+    background: '#dff0ff',
     surface: '#ffffff',
     'nav-surface': '#ffffff',
     primary: '#178ae7',
     'on-primary': '#ffffff',
-    'primary-darken-1': '#1265a8',
-    secondary: '#E3F2FD',
-    'secondary-darken-1': '#90CAF9',
+    secondary: '#6fc8ff',
+    'on-secondary': '#ffffff',
     'scroll-bar': '#000000',
-    shadow: '#5ba5d7',
+    shadow: '#0f548c',
     error: '#b44257',
-    info: '#ADE8F4',
+    info: '#75dcf1',
     success: '#6eb671',
     warning: '#fabf77',
   },
   variables: {
     'high-emphasis-opacity': 0.95,
-    'activated-opacity': 0,
+    'activated-opacity': 0.1,
     'hover-opacity': 0.15,
   },
 };
@@ -33,11 +33,9 @@ const darkTheme: ThemeDefinition = {
     background: '#041633',
     surface: '#082350',
     'nav-surface': '#092f69',
-    primary: '#bee3ff',
-    'on-primary': '#010711',
-    'primary-darken-1': '#90CAF9',
-    secondary: '#178ae7',
-    'secondary-darken-1': '#1976D2',
+    primary: '#178ae7',
+    secondary: '#c0e9ff',
+    'on-secondary': '#010711',
     'scroll-bar': '#ffffff',
     shadow: '#030e1f',
     error: '#b44257',
@@ -78,6 +76,13 @@ export default createVuetify({
       lg: 1280,
       xl: 1450,
       xxl: 2560,
+    },
+  },
+  icons: {
+    defaultSet: 'fa',
+    aliases,
+    sets: {
+      fa,
     },
   },
 });

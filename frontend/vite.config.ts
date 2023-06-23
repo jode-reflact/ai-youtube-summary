@@ -9,6 +9,9 @@ export default defineConfig({
   plugins: [
     vue({
       reactivityTransform: true,
+      script: {
+        defineModel: true,
+      },
     }),
     vuetify({
       styles: {

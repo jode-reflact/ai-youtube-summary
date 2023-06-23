@@ -4,6 +4,12 @@ html {
   overflow-y: auto;
 }
 
+body {
+  &::-webkit-scrollbar-track {
+    background-color: rgba(var(--v-theme-background));
+  }
+}
+
 /* Scroll bar stylings */
 ::-webkit-scrollbar {
   width: 2rem;
@@ -12,7 +18,7 @@ html {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background-color: transparent;
 }
 
 /* Handle */
