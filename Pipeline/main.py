@@ -1,6 +1,7 @@
 import json
 import argparse
 import sys
+import os
 
 from src.download_youtube_audio import VideoDownloader
 from src.summarize_video import VideoSummary
@@ -44,15 +45,16 @@ def pipeline(video_url):
 
 
 if __name__ == "__main__":
+    print("yt_url from os", os.environ.get('yt_url'))
     parser = argparse.ArgumentParser(description='Process a Video.')
     # will be accesible under args.POS
-    parser.add_argument('url', type=str, help='Video Url')
+    parser.add_argument('--url', type=str, help='Video Url', default=os.environ.get('yt_url'))
 
     args = parser.parse_args()
     print(args.url)
 
     result = pipeline(args.url)
-    sys.stdout.write(result + '\n')
+    sys.stdout.write("Summary:" + result + '\n')
     # print(title)
     # languages = video_transcriber.get_language(title + ".mp3")
     # print(languages)
