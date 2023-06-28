@@ -31,7 +31,7 @@ def pipeline(video_url):
         video_summarizer = VideoSummary(
             config["openai"]["organization"],
             config["openai"]["api_key"],
-            config["openai"]["model"],
+            config["openai"]["model"], 
             config["openai"]["split_length"])
 
         title = video_downloader.download_youtube_video(video_url)
@@ -39,7 +39,7 @@ def pipeline(video_url):
         text = video_transcriber.transcribe_video(title)
         #   print(text + "\n")
         summary = video_summarizer.chat_completion(text)
-        print(summary)
+        # print(summary)
         return summary
 
 
