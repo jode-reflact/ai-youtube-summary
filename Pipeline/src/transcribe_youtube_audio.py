@@ -1,15 +1,20 @@
 import os
+import openai
 
 import whisper
 
 
 class VideoTranscriber:
-    def __init__(self, input_folder, output_folder, english_model, alternate_model, base_model) -> None:
+    def __init__(self, input_folder, output_folder, english_model, alternate_model, base_model, use_whisper_api, api_key) -> None:
         self.input_folder = input_folder
         self.output_folder = output_folder
+
         self.english_model = english_model
         self.alternate_model = alternate_model
         self.base_model = base_model
+
+        self.use_whisper_api = use_whisper_api
+        self.api_key = api_key
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)
 
@@ -47,7 +52,26 @@ class VideoTranscriber:
         except Exception as e:
             print(e)
 
-    def transcribe_video(self, input_audio):
+    def _split_mp3_into_chunks(self, input_audio, output_folder):
+        chunk_size = 10 * 1024 * 1024  # 25MB in bytes
+        file_name = os.path.basename(input_audio)
+        
+        with open(input_audio, 'rb') as mp3_file:
+            index = 1
+            while True:
+                chunk_data = mp3_file.read(chunk_size)
+                
+                if not chunk_data:
+                    break
+
+                file_name = file_name.replace(".mp3", "")
+                output_file_path = os.path.join(output_folder, f'{file_name}_chunk{index}.mp3')
+                with open(output_file_path, 'wb') as output_file:
+                    output_file.write(chunk_data)
+                
+                index += 1
+
+    def _transcribe_video_local(self, input_audio):
         model = whisper.load_model(self._load_model(input_audio))
         path = self._build_file_path(input_audio)
         try:
@@ -55,3 +79,25 @@ class VideoTranscriber:
             return result["text"].replace("&", "and")
         except Exception as e:
             print(e)
+
+    def _transcribe_video_with_whisper_api(self, input_audio):
+        result = ""
+        # self._split_mp3_into_chunks(self._build_file_path(input_audio), self.output_folder)
+        for chunk in os.listdir(self.output_folder):
+            try:                
+                chunk_path = os.path.join(self.output_folder, chunk)
+                chunk_path = chunk_path.replace("\\", "/")
+                print(chunk_path)
+                with open(chunk_path, "rb") as audio_file:
+                    script = openai.Audio.transcribe("whisper-1", audio_file, api_key=self.api_key)
+                    result += script["text"]           
+            except Exception as e:
+                print(e)
+        return result
+
+    def transcribe_video(self, input_audio):
+        if self.use_whisper_api:
+            return self._transcribe_video_with_whisper_api(input_audio)
+        else:
+            return self._transcribe_video_local(input_audio)
+        
