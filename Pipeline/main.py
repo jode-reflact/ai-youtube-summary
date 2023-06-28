@@ -24,7 +24,9 @@ def pipeline(video_url):
             config["downloader"]["transcribtion_output_folder"],
             config["whisper"]["english_model"],
             config["whisper"]["alternate_model"],
-            config["whisper"]["base_model"])
+            config["whisper"]["base_model"],
+            config["openai"]["use_whisper_api"],
+            config["openai"]["api_key"])
 
         video_summarizer = VideoSummary(
             config["openai"]["organization"],
@@ -33,6 +35,7 @@ def pipeline(video_url):
             config["openai"]["split_length"])
 
         title = video_downloader.download_youtube_video(video_url)
+        # print(title)
         text = video_transcriber.transcribe_video(title)
         #   print(text + "\n")
         summary = video_summarizer.chat_completion(text)
