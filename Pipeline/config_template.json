@@ -7,7 +7,7 @@
         "organization": "<org>",
         "api_key": "<api-key>",
         "model": "<model>",
-        "split_length":"<split_length>",
+        "split_length": "<split_length>",
         "use_whisper_api": true
     },
     "whisper": {

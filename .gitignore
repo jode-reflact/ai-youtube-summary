@@ -2,7 +2,7 @@
 *.mp3
 *.wav
 *webm
-
+*.ytdl
 *.srt
 *.tsv
 Pipeline/temp/*.txt

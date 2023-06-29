@@ -54,11 +54,11 @@ class VideoTranscriber:
         except Exception as e:
             print(e)
 
-
     def _convert_to_mp3(self, input_file, output_file):
         try:
             # Execute the ffmpeg command
-            subprocess.run(['ffmpeg', '-y', '-i', input_file, '-codec:a', 'libmp3lame', output_file])
+            subprocess.run(['ffmpeg', '-y', '-i', input_file,
+                           '-codec:a', 'libmp3lame', output_file])
             # print(f"Conversion successful. MP3 file saved as {output_file}")
         except FileNotFoundError as e:
             # print("ffmpeg not found. Please ensure that ffmpeg is installed and added to the system's PATH.")
@@ -78,24 +78,24 @@ class VideoTranscriber:
     def _split_mp3_into_chunks(self, input_audio, output_folder):
         chunk_size = 25 * 1024 * 1024  # 25MB in bytes
         file_name = os.path.basename(input_audio)
-        
+
         with open(input_audio, 'rb') as mp3_file:
             index = 1
             while True:
                 chunk_data = mp3_file.read(chunk_size)
-                
+
                 if not chunk_data:
                     break
 
                 file_name = file_name.replace(".mp3", "")
-                output_file_path = os.path.join(output_folder, f'{file_name}_chunk{index}.mp3')
+                output_file_path = os.path.join(
+                    output_folder, f'{file_name}_chunk{index}.mp3')
                 with open(output_file_path, 'wb') as output_file:
                     output_file.write(chunk_data)
-                
-                # if index > 1:
-                # output_dir = os.path.dirname(output_file_path)
-                # os.makedirs(output_dir, exist_ok=True)
-                self._convert_to_mp3(output_file_path, output_file_path.replace(".mp3", "_converted.mp3"))
+
+
+                self._convert_to_mp3(
+                    output_file_path, output_file_path.replace(".mp3", "_converted.mp3"))
                 self._delete_file(output_file_path)
                 index += 1
 
@@ -110,18 +110,19 @@ class VideoTranscriber:
 
     def _transcribe_video_with_whisper_api(self, input_audio):
         result = ""
-        self._split_mp3_into_chunks(self._build_file_path(input_audio), self.output_folder)
+        self._split_mp3_into_chunks(
+            self._build_file_path(input_audio), self.output_folder)
         for chunk in os.listdir(self.output_folder):
-            try:                
+            try:
                 chunk_path = os.path.join(self.output_folder, chunk)
                 chunk_path = chunk_path.replace("\\", "/")
                 print("\n" + chunk_path)
                 with open(chunk_path, "rb") as audio_file:
-                    script = openai.Audio.transcribe("whisper-1", audio_file, api_key=self.api_key)
-                    
-                    # print(script["text"] + "\n")
-                    result += script["text"]        
-                self._delete_file(chunk_path)   
+                    script = openai.Audio.transcribe(
+                        "whisper-1", audio_file, api_key=self.api_key)
+
+                    result += script["text"]
+                self._delete_file(chunk_path)
             except Exception as e:
                 print(e)
         return result
@@ -131,4 +132,3 @@ class VideoTranscriber:
             return self._transcribe_video_with_whisper_api(input_audio)
         else:
             return self._transcribe_video_local(input_audio)
-        

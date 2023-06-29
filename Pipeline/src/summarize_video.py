@@ -23,7 +23,6 @@ class VideoSummary:
         if split_length <= 0:
             raise ValueError("Max length must be greater than 0.")
         num_parts = -(-len(text) // split_length)
-        # print(num_parts)
         context_data = []
         for i in range(num_parts):
             start = i * split_length
@@ -38,25 +37,20 @@ class VideoSummary:
                     start:end] + f'\n[END PART {i + 1}/{num_parts}]'
                 content += f'\nRemember not answering yet. Just acknowledge you received this part with the message "Part {i + 1}/{num_parts} received" and wait for the next part.'
             context_data.append(content)
-        # print(content)
         return context_data
 
     def chat_completion(self, text):
         openai.api_key = self.api_key
-        # template = self._generate_prompt(text)
         prompts = self._split_prompt(text, self.split_length)
-        # messages = []
+        index = 1
+        print("Sending parts to OpenAI API. This may take a while.")
         for prompt in prompts:
+            print(f"Sending part {index} of {len(prompts)}")
             messages = []
             message = {"role": "user", "content": prompt}
             messages.append(message)
             completion = openai.ChatCompletion.create(
                 model=self.model, messages=messages)
             time.sleep(20)
-        # completion = openai.ChatCompletion.create(
-         #  model=self.model, messages=messages)
-        # print(completion.choices[0].message.content)
-        # completion = openai.ChatCompletion.create(
-        #    model=self.model, messages=[{"role": "user", "content": template}])
-        # print(completion.choices[0].message.content)
+            index += 1
         return completion.choices[0].message.content
