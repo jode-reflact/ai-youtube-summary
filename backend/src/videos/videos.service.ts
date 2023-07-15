@@ -9,7 +9,6 @@ import { VideoNotFoundError } from '../common/errors/video-not-found.error';
 import { VideoAlreadyExistsError } from '../common/errors/video-already-exists.error';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class VideosService {
@@ -22,26 +21,6 @@ export class VideosService {
     @InjectQueue('video-summary')
     private readonly videoSummaryQueue: Queue,
   ) {}
-
-  @Cron(CronExpression.EVERY_DAY_AT_NOON)
-  async processVideosWithoutSummary() {
-    const videosWithoutSummary = await this.videoModel
-      .find({ summary: { $exists: false } })
-      .exec();
-
-    if (videosWithoutSummary.length === 0) return;
-
-    this.logger.log(
-      `🔎 Added ${videosWithoutSummary.length} videos without summary to processing queue`,
-    );
-
-    for (const video of videosWithoutSummary) {
-      await this.videoSummaryQueue.add({
-        videoId: video.id,
-        youtubeUrl: `https://www.youtube.com/watch?v=${video.ytVideoId}`,
-      });
-    }
-  }
 
   async fillSummary(videoId: string, summary: string) {
     const video = await this.videoModel.findById(videoId).exec();
