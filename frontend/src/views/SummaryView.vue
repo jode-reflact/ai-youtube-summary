@@ -1,5 +1,5 @@
 <template>
-  <content-section v-if="feedback.isError && !!feedback.data">
+  <content-section v-if="!feedback.isError && !!feedback.data">
     <template #title>{{ feedback.data.metadata.title }}</template>
     <div class="tw-flex" :class="{ 'tw-flex-col': mdAndDown }">
       <p class="tw-grow tw-basis-1/2 tw-text-justify tw-text-lg">

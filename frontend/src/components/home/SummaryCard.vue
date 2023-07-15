@@ -18,8 +18,8 @@
       <div class="tw-shrink-0 tw-grow tw-px-2 tw-py-5">
         <v-card-title class="tw-truncate tw-py-0">{{ video.metadata.title }}</v-card-title>
         <v-card-text v-if="!pending">
-          <span class="tw-line-clamp-3">
-            {{ video.ytVideoId }}
+          <span class="tw-mt-2 tw-line-clamp-3 tw-font-light">
+            {{ video.summary }}
           </span>
         </v-card-text>
         <v-card-subtitle class="tw-mb-1 tw-text-xs">
