@@ -29,4 +29,11 @@ export interface EnvironmentVariables {
 
   // Youtube
   YOUTUBE_API_KEY: string;
+
+  // Redis
+  REDIS_HOST: string;
+  REDIS_PORT: number;
+
+  // Video Summary
+  VIDEO_SUMMARY_CONCURRENCY: number;
 }

@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Video, VideoDocument } from './schemas/video.schema';
@@ -7,14 +7,56 @@ import { extractYtVideoId } from '../common/util/extract-yt-video-id';
 import { YoutubeApiConnector } from './youtube-api.connector';
 import { VideoNotFoundError } from '../common/errors/video-not-found.error';
 import { VideoAlreadyExistsError } from '../common/errors/video-already-exists.error';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class VideosService {
+  private readonly logger = new Logger(VideosService.name);
+
   constructor(
     @InjectModel(Video.name)
     private readonly videoModel: Model<VideoDocument>,
     private readonly youtubeApiConnector: YoutubeApiConnector,
+    @InjectQueue('video-summary')
+    private readonly videoSummaryQueue: Queue,
   ) {}
+
+  @Cron(CronExpression.EVERY_DAY_AT_NOON)
+  async processVideosWithoutSummary() {
+    const videosWithoutSummary = await this.videoModel
+      .find({ summary: { $exists: false } })
+      .exec();
+
+    if (videosWithoutSummary.length === 0) return;
+
+    this.logger.log(
+      `🔎 Added ${videosWithoutSummary.length} videos without summary to processing queue`,
+    );
+
+    for (const video of videosWithoutSummary) {
+      await this.videoSummaryQueue.add({
+        videoId: video.id,
+        youtubeUrl: `https://www.youtube.com/watch?v=${video.ytVideoId}`,
+      });
+    }
+  }
+
+  async fillSummary(videoId: string, summary: string) {
+    const video = await this.videoModel.findById(videoId).exec();
+    if (video == undefined) {
+      throw new VideoNotFoundError(videoId);
+    }
+
+    video.summary = summary;
+    await video.save();
+  }
+
+  async getSummary(videoId: string) {
+    return (await this.videoModel.findById(videoId).select('summary').exec())
+      .summary;
+  }
 
   async getByYtVideoIdOrCreateVideo(ytVideoId: string) {
     try {
@@ -37,6 +79,10 @@ export class VideosService {
     }
 
     const video = await this.createVideo(ytVideoId);
+    const job = await this.videoSummaryQueue.add({
+      videoId: video.id,
+      youtubeUrl: ytVideoUrl,
+    });
 
     return video.id;
   }

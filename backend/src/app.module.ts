@@ -11,6 +11,8 @@ import { MailModule } from './mail/mail.module';
 import { BusinessErrorFilter } from './common/filters/business-error-filter';
 import { TransformInterceptor } from './common/interceptors/transform-interceptor';
 import { VideosModule } from './videos/videos.module';
+import { BullModule } from '@nestjs/bull';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -18,14 +20,25 @@ import { VideosModule } from './videos/videos.module';
       isGlobal: true,
       validationSchema: environmentVariablesValidationSchema,
     }),
+    ScheduleModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (
         configService: ConfigService<EnvironmentVariables>,
       ) => ({
-        uri: configService.get<string>('MONGODB_CONNECTION_STRING', {
-          infer: true,
-        }),
+        uri: configService.get('MONGODB_CONNECTION_STRING', { infer: true }),
+      }),
+      inject: [ConfigService],
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (
+        configService: ConfigService<EnvironmentVariables>,
+      ) => ({
+        redis: {
+          host: configService.get('REDIS_HOST', { infer: true }),
+          port: configService.get('REDIS_PORT', { infer: true }),
+        },
       }),
       inject: [ConfigService],
     }),

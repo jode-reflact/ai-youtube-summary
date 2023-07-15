@@ -15,11 +15,15 @@ class Video {
   @Prop({ type: VideoMetadataSchema })
   metadata: VideoMetadata;
 
+  @Prop()
+  summary: string;
+
   static toDTO(video: Video) {
     return {
       id: video.id,
       ytVideoId: video.ytVideoId,
       metadata: video.metadata,
+      summary: video.summary,
     };
   }
 }

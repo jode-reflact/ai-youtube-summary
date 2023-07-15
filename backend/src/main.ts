@@ -7,6 +7,8 @@ import { EnvironmentVariables } from './config/environment-variables';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
+
   const config = app.get<ConfigService<EnvironmentVariables>>(ConfigService);
   const logger = new Logger(bootstrap.name);
 

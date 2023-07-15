@@ -31,4 +31,11 @@ export const environmentVariablesValidationSchema = Joi.object({
 
   // Youtube
   YOUTUBE_API_KEY: Joi.string().required(),
+
+  // Redis
+  REDIS_HOST: Joi.string().required(),
+  REDIS_PORT: Joi.number().integer().required(),
+
+  // Video Summary
+  VIDEO_SUMMARY_CONCURRENCY: Joi.number().integer().min(1).default(5),
 });
