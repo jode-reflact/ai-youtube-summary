@@ -10,6 +10,8 @@ import { VideosService } from '../videos/videos.service';
 import { Video } from '../videos/schemas/video.schema';
 import { VideoAlreadyExistsError } from '../common/errors/video-already-exists.error';
 import { VideoDeletionError } from '../common/errors/video-deletion.error';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 class UsersService {
@@ -17,6 +19,8 @@ class UsersService {
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
     private readonly videosService: VideosService,
+    @InjectQueue('video-summary')
+    private readonly videoSummaryQueue: Queue,
   ) {}
 
   async findUserByEmail(email: string): Promise<User> {
@@ -168,6 +172,11 @@ class UsersService {
 
     user.videos.push(videoId);
     await user.save();
+
+    await this.videoSummaryQueue.add({
+      videoId: videoId.toString(),
+      youtubeUrl: ytVideoUrl,
+    });
   }
 
   async getVideos(userId: string) {

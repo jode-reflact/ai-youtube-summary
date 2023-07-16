@@ -7,8 +7,6 @@ import { extractYtVideoId } from '../common/util/extract-yt-video-id';
 import { YoutubeApiConnector } from './youtube-api.connector';
 import { VideoNotFoundError } from '../common/errors/video-not-found.error';
 import { VideoAlreadyExistsError } from '../common/errors/video-already-exists.error';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 
 @Injectable()
 export class VideosService {
@@ -18,8 +16,6 @@ export class VideosService {
     @InjectModel(Video.name)
     private readonly videoModel: Model<VideoDocument>,
     private readonly youtubeApiConnector: YoutubeApiConnector,
-    @InjectQueue('video-summary')
-    private readonly videoSummaryQueue: Queue,
   ) {}
 
   async fillSummary(videoId: string, summary: string) {
@@ -52,16 +48,12 @@ export class VideosService {
   async addVideo(ytVideoUrl: string): Promise<Types.ObjectId> {
     const ytVideoId = extractYtVideoId(ytVideoUrl);
 
-    const videoExists = await this.videoModel.findOne({ ytVideoId }).exec();
-    if (videoExists) {
-      throw new VideoAlreadyExistsError(videoExists._id);
+    const existingVideo = await this.videoModel.findOne({ ytVideoId }).exec();
+    if (existingVideo) {
+      throw new VideoAlreadyExistsError(existingVideo._id);
     }
 
     const video = await this.createVideo(ytVideoId);
-    const job = await this.videoSummaryQueue.add({
-      videoId: video.id,
-      youtubeUrl: ytVideoUrl,
-    });
 
     return video.id;
   }
