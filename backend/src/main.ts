@@ -11,7 +11,7 @@ async function bootstrap() {
 
   const config = app.get<ConfigService<EnvironmentVariables>>(ConfigService);
   const logger = new Logger(bootstrap.name);
-  const FRONTEND_HOST = config.get('FRONTEND_HOST');
+  const FRONTEND_HOST = config.get('FRONTEND_HOST', { infer: true });
   const BACKEND_PORT = config.get('BACKEND_PORT', { infer: true });
   app.enableCors({ origin: FRONTEND_HOST });
   await app.listen(BACKEND_PORT);

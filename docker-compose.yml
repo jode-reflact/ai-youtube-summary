@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  pipeline:
+    image: yousum-pipeline
+    build: ./pipeline
+  frontend:
+    image: yousum-frontend
+    build: ./frontend
+    ports:
+      - "5173:5173"
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
