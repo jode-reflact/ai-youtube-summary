@@ -14,7 +14,7 @@ class VideoDownloader:
         # Set options for youtube-dl
         ydl_opts = {
             "format": "bestaudio/best",
-            "outtmpl": os.path.join(self.output_folder, "%(title)s.%(ext)s"),
+            "outtmpl": os.path.join(self.output_folder, "%(id)s.%(ext)s"),
             "postprocessors": [
                 {
                     "key": "FFmpegExtractAudio",
@@ -32,7 +32,7 @@ class VideoDownloader:
         try:
             with youtube_dlp.YoutubeDL(self._set_ytdl_config()) as ydl:
                 info_dict = ydl.extract_info(video_url, download=False)
-                video_title = info_dict.get('title', None)
+                video_title = info_dict.get('id', None)
                 ydl.download([video_url])
                 return video_title
         except Exception as e:
