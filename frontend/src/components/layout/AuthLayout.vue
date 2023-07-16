@@ -4,10 +4,11 @@
       class="tw-flex tw-items-center tw-justify-center"
       :class="smAndDown ? 'tw-mb-14' : 'tw-mb-20'"
     >
-      <img
+      <v-img
+        color="primary"
         class="tw-h-auto"
-        :class="smAndDown ? 'tw-w-14' : 'tw-w-20'"
-        src="/logoipsum-296.svg"
+        :class="smAndDown ? 'tw-w-20' : 'tw-w-24'"
+        src="/Logo.png"
         alt="Logo"
       />
       <span
