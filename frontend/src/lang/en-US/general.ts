@@ -1,6 +1,7 @@
 export default {
   lastUpdated: 'Last updated on',
   uploadedOn: 'Uploaded on',
+  addedOn: 'Added on',
   duration: 'Duration',
   viewCount: 'Views',
   likeCount: 'Likes',

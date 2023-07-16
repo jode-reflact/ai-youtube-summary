@@ -104,6 +104,8 @@ const fetchSuggestions = async () => {
   loading.value = true;
   suggestions.value = filterVideosByTitle(userInput.value, feedback.data);
   loading.value = false;
+
+  suggestionsOpened.value = true;
 };
 
 const suggestionClickHandler = (summaryId: string) => {
