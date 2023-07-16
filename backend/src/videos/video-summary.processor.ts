@@ -59,7 +59,7 @@ export class VideoSummaryProcessor {
     return new Promise<string>((resolve, reject) => {
       const process = child_process.spawn(
         'docker',
-        ['run', '--env yt_url="' + ytVideoUrl + '"', 'ai-yotutube-summary'],
+        ['run', '--env yt_url="' + ytVideoUrl + '"', 'ai-youtube-summary'],
         { shell: true },
       );
       process.stderr.on('data', (data) => {

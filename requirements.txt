@@ -1,5 +1,0 @@
-# To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
-openai==0.27.6
-openai_whisper==20230314
-whisper==1.1.10
-yt_dlp==2023.3.4
