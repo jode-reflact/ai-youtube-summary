@@ -3,10 +3,13 @@ import { VideosService } from '@/services/videos-service';
 import type { RequestFeedback } from '@/services/types/common';
 import type { IsValidYtUrlResponseBody } from '@/services/types/videos';
 
+type ValidationResult = string | boolean;
+
 export type FormRule<InputType> =
-  | string
-  | boolean
-  | ((value: InputType) => string | boolean | Promise<string> | Promise<boolean>);
+  | ValidationResult
+  | PromiseLike<ValidationResult>
+  | ((value: InputType) => ValidationResult)
+  | ((value: InputType) => PromiseLike<ValidationResult>);
 
 export const formRules = () => {
   const { t } = useI18n();
