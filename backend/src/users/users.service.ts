@@ -173,10 +173,15 @@ class UsersService {
     user.videos.push(videoId);
     await user.save();
 
-    await this.videoSummaryQueue.add({
-      videoId: videoId.toString(),
-      youtubeUrl: ytVideoUrl,
-    });
+    await this.videoSummaryQueue.add(
+      {
+        videoId: videoId.toString(),
+        youtubeUrl: ytVideoUrl,
+      },
+      {
+        jobId: ytVideoUrl,
+      },
+    );
   }
 
   async getVideos(userId: string) {
