@@ -3,8 +3,8 @@
     <template #title>{{ $t('home.addNewSummary') }}</template>
     <add-summary @added-new-video="fetchVideos" />
   </content-section>
-  <pending-summaries-section :feedback="feedback" />
   <finished-summaries-section :feedback="feedback" />
+  <pending-summaries-section :feedback="feedback" />
 </template>
 
 <script setup lang="ts">

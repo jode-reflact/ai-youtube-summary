@@ -1,0 +1,27 @@
+# Exclude node_modules directory (optional if you're copying dependencies in Dockerfile)
+node_modules
+
+# Exclude development-related files and directories
+dist
+*.map
+.env.example
+
+# Exclude version control files and directories
+.git
+.gitignore
+.gitattributes
+.gitlab-ci.yml
+.github
+
+# Exclude editor-specific files and directories
+.vscode
+.idea
+*.sublime*
+*.swp
+
+# Exclude miscellaneous files
+.DS_Store
+Thumbs.db
+.prettierrc.json
+.eslintrc.cjs
+Dockerfile

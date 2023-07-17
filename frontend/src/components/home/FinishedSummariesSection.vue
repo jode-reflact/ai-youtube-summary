@@ -1,5 +1,5 @@
 <template>
-  <content-section title-icon="fas fa-clock">
+  <content-section title-icon="fas fa-list-dots">
     <template #title>{{ $t('home.finishedSummaries.title') }}</template>
     <v-alert
       v-if="feedback.isError"

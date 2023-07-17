@@ -1,6 +1,7 @@
 export default {
   lastUpdated: 'Zuletzt aktualisiert am',
   uploadedOn: 'Hochgeladen am',
+  addedOn: 'Hinzugefügt am',
   duration: 'Dauer',
   viewCount: 'Aufrufe',
   likeCount: 'Gefällt mir',

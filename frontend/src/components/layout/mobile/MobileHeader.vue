@@ -5,12 +5,7 @@
       class="shadow-md tw-flex tw-h-full tw-items-center tw-rounded-3xl tw-px-6 tw-py-4"
     >
       <router-link to="/" class="tw-mr-auto tw-flex tw-items-center">
-        <v-img
-          :aspect-ratio="1"
-          src="/logoipsum-296.svg"
-          alt="Logo"
-          class="tw-mr-5 tw-h-auto tw-w-12"
-        />
+        <v-img :aspect-ratio="1" src="/Logo.png" alt="Logo" class="tw-mr-5 tw-h-auto tw-w-14" />
         <span class="tw-text-3xl tw-font-bold">{{ appTitle }}</span>
       </router-link>
       <logout-button />

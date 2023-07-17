@@ -2,7 +2,7 @@
   <v-overlay class="tw-backdrop-blur" v-model="overlayOpened">
     <slide-up>
       <div v-if="menuOpened" class="shadow-md tw-z-20 tw-flex tw-h-screen tw-w-screen tw-flex-col">
-        <div class="tw-h-[30vh] tw-shrink-0" />
+        <div class="tw-h-[15vh] tw-shrink-0" />
         <div
           class="shadow-md bg-nav-surface tw-flex tw-min-h-0 tw-grow tw-flex-col tw-rounded-t-3xl tw-p-10"
           v-click-outside="{
