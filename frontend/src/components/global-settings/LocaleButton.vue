@@ -25,7 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import localeOptions from '@/components/global-settings/locale-options';
 import { useSetLocale } from '@/composables/set-locale';
 import { useDisplay } from 'vuetify';
@@ -33,13 +32,4 @@ import { useDisplay } from 'vuetify';
 const { setLocale } = useSetLocale();
 
 const { mdAndUp } = useDisplay();
-
-const getNavigatorLang = () =>
-  navigator.languages && navigator.languages.length
-    ? navigator.languages[0]
-    : navigator.language || 'en';
-
-onMounted(() => {
-  setLocale(localStorage.getItem('user-lang') || getNavigatorLang());
-});
 </script>
