@@ -6,7 +6,10 @@
         :icon="titleIcon"
         class="tw-mr-5 tw-aspect-square tw-h-auto tw-w-6"
       />
-      <span class="tw-pb-1 tw-text-3xl tw-font-semibold">
+      <span
+        :lang="locale"
+        class="tw-min-w-0 tw-hyphens-auto tw-break-words tw-pb-1 tw-text-3xl tw-font-semibold"
+      >
         <slot name="title" />
       </span>
     </div>
@@ -17,8 +20,12 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 defineProps<{
   titleIcon?: string;
   divider?: boolean;
 }>();
+
+const { locale } = useI18n({ useScope: 'global' });
 </script>
