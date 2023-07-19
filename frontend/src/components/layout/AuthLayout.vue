@@ -12,7 +12,7 @@
         alt="Logo"
       />
       <span
-        class="tw-align-middle tw-font-bold tw-opacity-100"
+        class="tw-align-middle tw-font-bold tw-opacity-100 tw-whitespace-nowrap"
         :class="smAndDown ? 'tw-ml-5 tw-text-5xl' : 'tw-ml-8 tw-text-6xl'"
       >
         {{ appTitle }}
