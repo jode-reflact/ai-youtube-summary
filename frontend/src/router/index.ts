@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteLocationNormalized } from 'vue-router';
+import {createRouter, createWebHashHistory, type RouteLocationNormalized} from 'vue-router';
 import type { Router } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 import authRoutes from '@/router/auth-routes';
@@ -7,7 +7,7 @@ import appRoutes from '@/router/app-routes';
 import AuthLayout from '@/components/layout/AuthLayout.vue';
 
 const router: Router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   // eslint-disable-next-line @typescript-eslint/typedef
   scrollBehavior: (to, from, savedPosition) => {
     if (savedPosition) {
