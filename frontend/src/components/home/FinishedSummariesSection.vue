@@ -20,7 +20,7 @@ import SummarySlider from '@/components/home/SummarySlider.vue';
 import ContentSection from '@/components/layout/ContentSection.vue';
 import type { RequestFeedback, Video } from '@/services/types/common';
 import { computed, type ComputedRef } from 'vue';
-import { filterFinishedVideos } from '@/helpers/videos';
+import { filterFinishedVideos, sortVideosByLastUpdated } from '@/helpers/videos';
 
 const { feedback } = defineProps<{
   feedback: RequestFeedback<Video[]>;
@@ -28,6 +28,7 @@ const { feedback } = defineProps<{
 
 const finishedVideos: ComputedRef<Video[]> = computed(() => {
   if (!feedback.data || !feedback.data.length) return [];
-  return filterFinishedVideos(feedback.data);
+  const finishedVideos: Video[] = filterFinishedVideos(feedback.data);
+  return sortVideosByLastUpdated(finishedVideos);
 });
 </script>
