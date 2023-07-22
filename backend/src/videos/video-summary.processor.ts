@@ -1,13 +1,13 @@
-import { config } from 'dotenv';
-import child_process from 'node:child_process';
-import { Logger } from '@nestjs/common';
 import {
   OnQueueActive,
   OnQueueCompleted,
   Process,
   Processor,
 } from '@nestjs/bull';
+import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
+import { config } from 'dotenv';
+import child_process from 'node:child_process';
 import { VideosService } from './videos.service';
 
 config(); // neccessary for process.env to work to retrieve VIDEO_SUMMARY_CONCURRENCY
@@ -18,7 +18,7 @@ export class VideoSummaryProcessor {
   private static readonly CONCURRENCY =
     parseInt(process.env['VIDEO_SUMMARY_CONCURRENCY']) || 5;
 
-  constructor(private readonly videoService: VideosService) {}
+  constructor(private readonly videoService: VideosService) { }
 
   @Process({
     concurrency: VideoSummaryProcessor.CONCURRENCY,
@@ -45,6 +45,8 @@ export class VideoSummaryProcessor {
   ) {
     const { videoId, youtubeUrl } = job.data;
     this.logger.log(`🏁 Summarized video ${youtubeUrl}: ${summary}`);
+
+    child_process.spawn('docker', ["container", "prune", "--force"], { shell: true });
 
     await this.videoService.fillSummary(videoId, summary);
   }
