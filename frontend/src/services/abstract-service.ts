@@ -1,12 +1,12 @@
+import type { AuthHeaders } from '@/services/types/auth';
 import {
+  isErrorResponse,
   type ErrorResponse,
   type HttpMethod,
-  isErrorResponse,
   type RequestFeedback,
   type SuccessResponse,
 } from '@/services/types/common';
 import { useAuthStore } from '@/stores/auth.store';
-import type { AuthHeaders } from '@/services/types/auth';
 
 export abstract class AbstractService {
   private static readonly API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -68,7 +68,7 @@ export abstract class AbstractService {
     searchParams?: URLSearchParams
   ): Promise<RequestFeedback<SuccessResponseDataType>> {
     try {
-      const url: URL = new URL(`${this.serviceUrlPath}/${apiPath}`, AbstractService.API_BASE_URL);
+      const url: URL = new URL(`${AbstractService.API_BASE_URL}/${this.serviceUrlPath}/${apiPath}`);
 
       if (searchParams) {
         url.search = searchParams.toString();
