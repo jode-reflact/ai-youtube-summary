@@ -1,6 +1,12 @@
 <template>
   <v-card class="shadow-md tw-flex tw-flex-col tw-rounded-3xl tw-p-5">
-    <v-btn flat :href="channelUrl" class="tw-flex tw-rounded-3xl tw-px-4 tw-py-3" color="surface">
+    <v-btn
+      flat
+      target="_blank"
+      :href="channelUrl"
+      class="tw-flex tw-rounded-3xl tw-px-4 tw-py-3"
+      color="surface"
+    >
       <div class="tw-flex tw-w-full tw-items-center">
         <v-img
           class="tw-mr-3 tw-aspect-square tw-h-auto tw-w-10 tw-rounded-full"

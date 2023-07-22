@@ -1,5 +1,5 @@
 <template>
-  <v-card :href="videoUrl" class="shadow-sm tw-flex tw-flex-col tw-rounded-3xl">
+  <v-card target="_blank" :href="videoUrl" class="shadow-sm tw-flex tw-flex-col tw-rounded-3xl">
     <v-img :aspect-ratio="16 / 9" cover :src="video.metadata.thumbnailUrl">
       <v-icon
         icon="fas fa-play"
