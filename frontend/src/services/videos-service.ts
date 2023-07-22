@@ -4,8 +4,8 @@ import type { Video } from '@/services/types/common';
 
 export class VideosService extends AbstractService {
   API_ROUTES = {
-    getVideo: 'videos',
-    isValidYtUrl: 'youtube/is-video-url',
+    getVideo: '/videos',
+    isValidYtUrl: '/youtube/is-video-url',
   };
 
   constructor() {

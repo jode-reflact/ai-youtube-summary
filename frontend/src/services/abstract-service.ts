@@ -68,7 +68,7 @@ export abstract class AbstractService {
     searchParams?: URLSearchParams
   ): Promise<RequestFeedback<SuccessResponseDataType>> {
     try {
-      const url: URL = new URL(`${AbstractService.API_BASE_URL}/${this.serviceUrlPath}/${apiPath}`);
+      const url: URL = new URL(`${AbstractService.API_BASE_URL}${this.serviceUrlPath}${apiPath}`);
 
       if (searchParams) {
         url.search = searchParams.toString();

@@ -4,12 +4,12 @@ import type { Video } from '@/services/types/common';
 
 export class UsersService extends AbstractService {
   API_ROUTES = {
-    getVideos: 'videos',
-    addVideo: 'videos',
+    getVideos: '/videos',
+    addVideo: '/videos',
   };
 
   constructor(userId: string) {
-    super(`users/${userId}`, 'users');
+    super(`/users/${userId}`, 'users');
   }
 
   public async getVideos() {

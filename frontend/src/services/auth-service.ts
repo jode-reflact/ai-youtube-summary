@@ -9,18 +9,18 @@ import type {
 
 export class AuthService extends AbstractService {
   API_ROUTES = {
-    register: 'register',
-    resendConfirmationLink: 'resend-confirmation-link',
-    confirm: 'confirm',
-    login: 'login',
-    requestPasswordReset: 'request-password-reset',
-    resetPassword: 'reset-password',
-    logout: 'logout',
-    refresh: 'refresh',
+    register: '/register',
+    resendConfirmationLink: '/resend-confirmation-link',
+    confirm: '/confirm',
+    login: '/login',
+    requestPasswordReset: '/request-password-reset',
+    resetPassword: '/reset-password',
+    logout: '/logout',
+    refresh: '/refresh',
   };
 
   constructor() {
-    super('auth', 'auth');
+    super('/auth', 'auth');
   }
 
   public async register(email: string, password: string) {
