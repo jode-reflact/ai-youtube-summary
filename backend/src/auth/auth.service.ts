@@ -4,18 +4,18 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { randomUUID } from 'crypto';
 
-import { EnvironmentVariables } from '../config/environment-variables';
-import { UsersService } from '../users/users.service';
-import { InvalidCredentialsError } from '../common/errors/invalid-credentials.error';
 import { EmailNotConfirmedError } from '../common/errors/email-not-confirmed.error';
-import { User } from '../users/schemas/user.schema';
+import { InvalidCredentialsError } from '../common/errors/invalid-credentials.error';
 import { InvalidEmailError } from '../common/errors/invalid-email.error';
 import { InvalidPasswordError } from '../common/errors/invalid-password.error';
-import { MailService } from '../mail/mail.service';
-import { UserAlreadyConfirmedError } from '../common/errors/user-already-confirmed.error';
 import { InvalidTokenError } from '../common/errors/invalid-token.error';
-import { isExpired } from '../common/util/is-expired';
 import { TokenExpiredError } from '../common/errors/token-expired.error';
+import { UserAlreadyConfirmedError } from '../common/errors/user-already-confirmed.error';
+import { isExpired } from '../common/util/is-expired';
+import { EnvironmentVariables } from '../config/environment-variables';
+import { MailService } from '../mail/mail.service';
+import { User } from '../users/schemas/user.schema';
+import { UsersService } from '../users/users.service';
 import { AccessTokenPayload } from './types/access-token-payload';
 import { RefreshTokenPayload } from './types/refresh-token-payload';
 
@@ -41,7 +41,7 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService<EnvironmentVariables>,
-  ) {}
+  ) { }
 
   async login(enteredCredentials: {
     email: string;
@@ -290,7 +290,7 @@ export class AuthService {
 
   private buildConfirmationLink(userId: string, confirmationToken: string) {
     const confirmationLink = new URL(this.FRONTEND_HOST);
-    confirmationLink.pathname = '/confirm-registration';
+    confirmationLink.pathname = '/auth/confirm-registration';
     confirmationLink.searchParams.append('userId', userId);
     confirmationLink.searchParams.append('token', confirmationToken);
 
@@ -319,7 +319,7 @@ export class AuthService {
 
   private buildPasswordResetLink(userId: string, passwordResetToken: string) {
     const passwordResetLink = new URL(this.FRONTEND_HOST);
-    passwordResetLink.pathname = '/reset-password';
+    passwordResetLink.pathname = '/auth/reset-password';
     passwordResetLink.searchParams.append('userId', userId);
     passwordResetLink.searchParams.append('token', passwordResetToken);
 
