@@ -289,10 +289,13 @@ export class AuthService {
   }
 
   private buildConfirmationLink(userId: string, confirmationToken: string) {
+    const confirmationLink = new URL(this.FRONTEND_HOST + `/#/auth/confirm-registration?userId=${userId}&token=${confirmationToken}`);
+    /*
     const confirmationLink = new URL(this.FRONTEND_HOST);
     confirmationLink.pathname = '/auth/confirm-registration';
     confirmationLink.searchParams.append('userId', userId);
     confirmationLink.searchParams.append('token', confirmationToken);
+    */
 
     return confirmationLink.toString();
   }
@@ -318,10 +321,13 @@ export class AuthService {
   }
 
   private buildPasswordResetLink(userId: string, passwordResetToken: string) {
+    const passwordResetLink = new URL(this.FRONTEND_HOST + `/#/auth/reset-password?userId=${userId}&token=${passwordResetToken}`);
+    /*
     const passwordResetLink = new URL(this.FRONTEND_HOST);
     passwordResetLink.pathname = '/auth/reset-password';
     passwordResetLink.searchParams.append('userId', userId);
     passwordResetLink.searchParams.append('token', passwordResetToken);
+    */
 
     return passwordResetLink.toString();
   }
