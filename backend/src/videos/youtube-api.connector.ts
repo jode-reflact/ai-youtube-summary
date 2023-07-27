@@ -2,14 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
 
-import { EnvironmentVariables } from '../config/environment-variables';
-import { VideoMetadata } from '../common/types/video-metadata';
-import { YoutubeApiNotReachableError } from '../common/errors/youtube-api-not-reachable.error';
-import { YouTubeVideoApiResponse } from './types/youtube-video-api-response';
-import { VideoNotExistsError } from '../common/errors/video-not-exists.error';
-import { YouTubeChannelApiResponse } from './types/youtube-channel-api-response';
 import { ChannelNotExistsError } from '../common/errors/channel-not-exists.error';
+import { VideoNotExistsError } from '../common/errors/video-not-exists.error';
+import { YoutubeApiNotReachableError } from '../common/errors/youtube-api-not-reachable.error';
 import { ChannelThumbnails } from '../common/types/channel-thumbnails';
+import { VideoMetadata } from '../common/types/video-metadata';
+import { EnvironmentVariables } from '../config/environment-variables';
+import { YouTubeChannelApiResponse } from './types/youtube-channel-api-response';
+import { YouTubeVideoApiResponse } from './types/youtube-video-api-response';
 
 @Injectable()
 class YoutubeApiConnector {
@@ -21,7 +21,7 @@ class YoutubeApiConnector {
 
   constructor(
     private readonly configService: ConfigService<EnvironmentVariables>,
-  ) {}
+  ) { }
 
   async getYouTubeVideoMetadata(videoId: string): Promise<VideoMetadata> {
     const baseURL = 'https://www.googleapis.com/youtube/v3/videos';
@@ -49,6 +49,13 @@ class YoutubeApiConnector {
     }
 
     const videoMetadata = response.data.items[0];
+
+    // commentCount is NaN for videos with disabled comments --> set count to 0 then
+    let commentCount = +videoMetadata.statistics.commentCount;
+    if (isNaN(commentCount)) {
+      commentCount = 0;
+    }
+
     return {
       title: videoMetadata.snippet.title,
       publishedAt: videoMetadata.snippet.publishedAt,
@@ -62,7 +69,7 @@ class YoutubeApiConnector {
         viewCount: +videoMetadata.statistics.viewCount,
         likeCount: +videoMetadata.statistics.likeCount,
         favoriteCount: +videoMetadata.statistics.favoriteCount,
-        commentCount: +videoMetadata.statistics.commentCount,
+        commentCount: commentCount,
       },
     };
   }
